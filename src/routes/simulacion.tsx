@@ -7,10 +7,12 @@ import { z } from "zod";
 
 import { AnamnesisChat } from "@/components/AnamnesisChat";
 import { FeedbackPanel } from "@/components/FeedbackPanel";
+import { GeneracionCaso } from "@/components/GeneracionCaso";
 import { MessageResponse } from "@/components/ai-elements/message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { generarCaso, generarFeedback, responderEtapa } from "@/lib/simulacion.functions";
+import { generarFeedback, responderEtapa } from "@/lib/simulacion.functions";
+import { useCasoStream } from "@/lib/useCasoStream";
 import {
   APARATOS,
   DIFICULTADES,
