@@ -54,7 +54,6 @@ function Simulacion() {
   const nombreAparato = APARATOS.find((a) => a.id === aparato)?.nombre ?? aparato;
   const nombreDificultad = DIFICULTADES.find((d) => d.id === dificultad)?.nombre ?? dificultad;
 
-  const [caso, setCaso] = useState<Caso | null>(null);
   const [etapa, setEtapa] = useState<EtapaId>("anamnesis");
   const [anamnesis, setAnamnesis] = useState("");
   const [examenFisico, setExamenFisico] = useState<SolicitudEtapa[]>([]);
@@ -64,21 +63,17 @@ function Simulacion() {
   const [seguimiento, setSeguimiento] = useState("");
   const [feedback, setFeedback] = useState<Feedback | null>(null);
 
-  const crearCaso = useServerFn(generarCaso);
   const pedirEtapa = useServerFn(responderEtapa);
   const pedirFeedback = useServerFn(generarFeedback);
 
-  const casoMutation = useMutation({
-    mutationFn: () => crearCaso({ data: { aparato: nombreAparato, dificultad } }),
-    onSuccess: (data) => setCaso(data as Caso),
-  });
+  const { parcial, caso, error: errorCaso, generando, generar } = useCasoStream();
 
   const iniciado = useRef(false);
   useEffect(() => {
     if (iniciado.current) return;
     iniciado.current = true;
-    casoMutation.mutate();
-  }, [casoMutation]);
+    void generar(nombreAparato, dificultad);
+  }, [generar, nombreAparato, dificultad]);
 
   const feedbackMutation = useMutation({
     mutationFn: () =>
