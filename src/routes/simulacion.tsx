@@ -7,10 +7,12 @@ import { z } from "zod";
 
 import { AnamnesisChat } from "@/components/AnamnesisChat";
 import { FeedbackPanel } from "@/components/FeedbackPanel";
+import { GeneracionCaso } from "@/components/GeneracionCaso";
 import { MessageResponse } from "@/components/ai-elements/message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { generarCaso, generarFeedback, responderEtapa } from "@/lib/simulacion.functions";
+import { generarFeedback, responderEtapa } from "@/lib/simulacion.functions";
+import { useCasoStream } from "@/lib/useCasoStream";
 import {
   APARATOS,
   DIFICULTADES,
@@ -54,7 +56,6 @@ function Simulacion() {
   const nombreAparato = APARATOS.find((a) => a.id === aparato)?.nombre ?? aparato;
   const nombreDificultad = DIFICULTADES.find((d) => d.id === dificultad)?.nombre ?? dificultad;
 
-  const [caso, setCaso] = useState<Caso | null>(null);
   const [etapa, setEtapa] = useState<EtapaId>("anamnesis");
   const [anamnesis, setAnamnesis] = useState("");
   const [examenFisico, setExamenFisico] = useState<SolicitudEtapa[]>([]);
@@ -64,21 +65,17 @@ function Simulacion() {
   const [seguimiento, setSeguimiento] = useState("");
   const [feedback, setFeedback] = useState<Feedback | null>(null);
 
-  const crearCaso = useServerFn(generarCaso);
   const pedirEtapa = useServerFn(responderEtapa);
   const pedirFeedback = useServerFn(generarFeedback);
 
-  const casoMutation = useMutation({
-    mutationFn: () => crearCaso({ data: { aparato: nombreAparato, dificultad } }),
-    onSuccess: (data) => setCaso(data as Caso),
-  });
+  const { parcial, caso, error: errorCaso, generando, generar } = useCasoStream();
 
   const iniciado = useRef(false);
   useEffect(() => {
     if (iniciado.current) return;
     iniciado.current = true;
-    casoMutation.mutate();
-  }, [casoMutation]);
+    void generar(nombreAparato, dificultad);
+  }, [generar, nombreAparato, dificultad]);
 
   const feedbackMutation = useMutation({
     mutationFn: () =>
@@ -102,25 +99,26 @@ function Simulacion() {
 
   const onTranscripcion = useCallback((t: string) => setAnamnesis(t), []);
 
-  if (casoMutation.isPending || (!caso && !casoMutation.isError)) {
+  if (!caso && !errorCaso) {
     return (
-      <EstadoCarga
-        titulo="Preparando el caso clínico"
+      <GeneracionCaso
+        parcial={parcial}
         detalle={`${nombreAparato} · dificultad ${nombreDificultad.toLowerCase()}`}
       />
     );
   }
 
-  if (casoMutation.isError || !caso) {
+  if (!caso) {
     return (
       <main className="mx-auto max-w-2xl px-5 py-24 text-center">
         <h1 className="text-3xl">No se pudo generar el caso</h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          {(casoMutation.error as Error)?.message ??
-            "Ocurrió un problema al crear la simulación."}
+          {errorCaso ?? "Ocurrió un problema al crear la simulación."}
         </p>
         <div className="mt-6 flex justify-center gap-3">
-          <Button onClick={() => casoMutation.mutate()}>Reintentar</Button>
+          <Button disabled={generando} onClick={() => void generar(nombreAparato, dificultad)}>
+            Reintentar
+          </Button>
           <Button variant="outline" onClick={() => navigate({ to: "/" })}>
             Volver al inicio
           </Button>
@@ -228,7 +226,10 @@ function Simulacion() {
             pedirEtapa={pedirEtapa}
             placeholder="Ej.: laboratorio con hemograma, urea, creatinina, ionograma y troponina; ECG de 12 derivaciones; Rx tórax F y P"
           />
-          <Avanzar onClick={() => setEtapa("diagnostico")} texto="Pasar al diagnóstico presuntivo" />
+          <Avanzar
+            onClick={() => setEtapa("diagnostico")}
+            texto="Pasar al diagnóstico presuntivo"
+          />
         </Seccion>
       )}
 
@@ -427,19 +428,5 @@ function EtapaSolicitudes({
         <p className="text-sm text-destructive">No se pudo obtener el resultado. Probá de nuevo.</p>
       )}
     </div>
-  );
-}
-
-function EstadoCarga({ titulo, detalle }: { titulo: string; detalle: string }) {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-5 text-center">
-      <Loader2 className="mb-5 size-7 animate-spin text-primary" />
-      <h1 className="text-3xl">{titulo}</h1>
-      <p className="mt-2 text-sm text-muted-foreground">{detalle}</p>
-      <p className="mt-6 max-w-sm text-xs text-muted-foreground">
-        Estamos construyendo una historia clínica completa y coherente. Puede tardar unos
-        segundos.
-      </p>
-    </main>
   );
 }
