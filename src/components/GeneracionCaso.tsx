@@ -43,7 +43,11 @@ function Paso({ listo, etiqueta }: { listo: boolean; etiqueta: string }) {
           listo ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card",
         )}
       >
-        {listo ? <Check className="size-3" /> : <Loader2 className="size-3 animate-spin opacity-50" />}
+        {listo ? (
+          <Check className="size-3" />
+        ) : (
+          <Loader2 className="size-3 animate-spin opacity-50" />
+        )}
       </span>
       <span className={listo ? "text-foreground" : "text-muted-foreground"}>{etiqueta}</span>
     </li>

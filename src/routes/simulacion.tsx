@@ -116,10 +116,7 @@ function Simulacion() {
           {errorCaso ?? "Ocurrió un problema al crear la simulación."}
         </p>
         <div className="mt-6 flex justify-center gap-3">
-          <Button
-            disabled={generando}
-            onClick={() => void generar(nombreAparato, dificultad)}
-          >
+          <Button disabled={generando} onClick={() => void generar(nombreAparato, dificultad)}>
             Reintentar
           </Button>
           <Button variant="outline" onClick={() => navigate({ to: "/" })}>
@@ -229,7 +226,10 @@ function Simulacion() {
             pedirEtapa={pedirEtapa}
             placeholder="Ej.: laboratorio con hemograma, urea, creatinina, ionograma y troponina; ECG de 12 derivaciones; Rx tórax F y P"
           />
-          <Avanzar onClick={() => setEtapa("diagnostico")} texto="Pasar al diagnóstico presuntivo" />
+          <Avanzar
+            onClick={() => setEtapa("diagnostico")}
+            texto="Pasar al diagnóstico presuntivo"
+          />
         </Seccion>
       )}
 
