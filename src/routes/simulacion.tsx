@@ -97,25 +97,29 @@ function Simulacion() {
 
   const onTranscripcion = useCallback((t: string) => setAnamnesis(t), []);
 
-  if (casoMutation.isPending || (!caso && !casoMutation.isError)) {
+  if (!caso && !errorCaso) {
     return (
-      <EstadoCarga
-        titulo="Preparando el caso clínico"
+      <GeneracionCaso
+        parcial={parcial}
         detalle={`${nombreAparato} · dificultad ${nombreDificultad.toLowerCase()}`}
       />
     );
   }
 
-  if (casoMutation.isError || !caso) {
+  if (!caso) {
     return (
       <main className="mx-auto max-w-2xl px-5 py-24 text-center">
         <h1 className="text-3xl">No se pudo generar el caso</h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          {(casoMutation.error as Error)?.message ??
-            "Ocurrió un problema al crear la simulación."}
+          {errorCaso ?? "Ocurrió un problema al crear la simulación."}
         </p>
         <div className="mt-6 flex justify-center gap-3">
-          <Button onClick={() => casoMutation.mutate()}>Reintentar</Button>
+          <Button
+            disabled={generando}
+            onClick={() => void generar(nombreAparato, dificultad)}
+          >
+            Reintentar
+          </Button>
           <Button variant="outline" onClick={() => navigate({ to: "/" })}>
             Volver al inicio
           </Button>
