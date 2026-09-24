@@ -430,17 +430,3 @@ function EtapaSolicitudes({
     </div>
   );
 }
-
-function EstadoCarga({ titulo, detalle }: { titulo: string; detalle: string }) {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-5 text-center">
-      <Loader2 className="mb-5 size-7 animate-spin text-primary" />
-      <h1 className="text-3xl">{titulo}</h1>
-      <p className="mt-2 text-sm text-muted-foreground">{detalle}</p>
-      <p className="mt-6 max-w-sm text-xs text-muted-foreground">
-        Estamos construyendo una historia clínica completa y coherente. Puede tardar unos
-        segundos.
-      </p>
-    </main>
-  );
-}
