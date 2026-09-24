@@ -30,7 +30,7 @@ Cómo actuar:
 
 GUION CONFIDENCIAL DEL CASO:
 ${JSON.stringify(body.caso ?? {})}`,
-          messages: convertToModelMessages(body.messages ?? []),
+          messages: await convertToModelMessages(body.messages ?? []),
           providerOptions: razonamiento,
         });
 
