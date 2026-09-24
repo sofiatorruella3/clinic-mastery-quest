@@ -146,8 +146,8 @@ function Simulacion() {
       </div>
 
       <section className="card-clinica mb-6 p-6">
-        <div className="mb-3 inline-flex items-center gap-2 text-xs tracking-wide text-muted-foreground uppercase">
-          <Stethoscope className="size-3.5" /> {caso.ambito}
+        <div className="mb-3 flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+          <Stethoscope className="mt-0.5 size-3.5 shrink-0" /> <span>{caso.ambito}</span>
         </div>
         <h1 className="text-3xl md:text-4xl">{caso.titulo}</h1>
         <p className="mt-3 text-sm leading-relaxed">
