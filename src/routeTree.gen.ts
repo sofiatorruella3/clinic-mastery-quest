@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SimulacionRouteImport } from './routes/simulacion'
 import { Route as ApiAnamnesisRouteImport } from './routes/api/anamnesis'
+import { Route as ApiCasoRouteImport } from './routes/api/caso'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const ApiAnamnesisRoute = ApiAnamnesisRouteImport.update({
   path: '/api/anamnesis',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCasoRoute = ApiCasoRouteImport.update({
+  id: '/api/caso',
+  path: '/api/caso',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/simulacion': typeof SimulacionRoute
   '/api/anamnesis': typeof ApiAnamnesisRoute
+  '/api/caso': typeof ApiCasoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/simulacion': typeof SimulacionRoute
   '/api/anamnesis': typeof ApiAnamnesisRoute
+  '/api/caso': typeof ApiCasoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/simulacion': typeof SimulacionRoute
   '/api/anamnesis': typeof ApiAnamnesisRoute
+  '/api/caso': typeof ApiCasoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/simulacion' | '/api/anamnesis'
+  fullPaths: '/' | '/simulacion' | '/api/anamnesis' | '/api/caso'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/simulacion' | '/api/anamnesis'
-  id: '__root__' | '/' | '/simulacion' | '/api/anamnesis'
+  to: '/' | '/simulacion' | '/api/anamnesis' | '/api/caso'
+  id: '__root__' | '/' | '/simulacion' | '/api/anamnesis' | '/api/caso'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SimulacionRoute: typeof SimulacionRoute
   ApiAnamnesisRoute: typeof ApiAnamnesisRoute
+  ApiCasoRoute: typeof ApiCasoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAnamnesisRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/caso': {
+      id: '/api/caso'
+      path: '/api/caso'
+      fullPath: '/api/caso'
+      preLoaderRoute: typeof ApiCasoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SimulacionRoute: SimulacionRoute,
   ApiAnamnesisRoute: ApiAnamnesisRoute,
+  ApiCasoRoute: ApiCasoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
