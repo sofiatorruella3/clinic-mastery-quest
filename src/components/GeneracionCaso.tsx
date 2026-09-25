@@ -61,7 +61,7 @@ export function GeneracionCaso({
   parcial: CasoParcial | null;
   detalle: string;
 }) {
-  const p = parcial ?? {};
+  const p: CasoParcial = parcial ?? {};
   const oculto = p.guionOculto ?? {};
 
   return (
@@ -82,32 +82,6 @@ export function GeneracionCaso({
           ))}
         </ul>
 
-        {(p.titulo || p.paciente?.nombre || p.signosVitales) && (
-          <div className="mt-5 space-y-2 border-t border-border pt-4 text-sm leading-relaxed">
-            {p.titulo && <p className="font-medium">{p.titulo}</p>}
-            {p.ambito && <p className="text-xs text-muted-foreground">{p.ambito}</p>}
-            {p.paciente?.nombre && (
-              <p>
-                {p.paciente.nombre}
-                {p.paciente.edad ? `, ${p.paciente.edad}` : ""}
-                {p.paciente.sexo ? `, ${p.paciente.sexo}` : ""}
-                {p.paciente.ocupacion ? `. ${p.paciente.ocupacion}` : ""}
-              </p>
-            )}
-            {p.motivoConsulta && (
-              <p>
-                <span className="text-muted-foreground">Motivo de consulta: </span>
-                {p.motivoConsulta}
-              </p>
-            )}
-            {p.signosVitales && (
-              <p>
-                <span className="text-muted-foreground">Signos vitales: </span>
-                {p.signosVitales}
-              </p>
-            )}
-          </div>
-        )}
       </section>
 
       <section className="card-clinica p-6">

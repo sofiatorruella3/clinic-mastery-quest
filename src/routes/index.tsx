@@ -56,7 +56,9 @@ const ICONOS: Record<string, typeof Heart> = {
 
 function Inicio() {
   const navigate = useNavigate();
-  const [aparato, setAparato] = useState<string | null>(null);
+  const [aparatos, setAparatos] = useState<string[]>([]);
+  const toggle = (id: string) =>
+    setAparatos((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   const [dificultad, setDificultad] = useState<Dificultad>("moderada");
 
   return (
@@ -79,17 +81,27 @@ function Inicio() {
       <section className="mb-10">
         <h2 className="mb-1 text-2xl">1. Aparato o sistema</h2>
         <p className="mb-5 text-sm text-muted-foreground">
-          El caso se genera nuevo cada vez.
+          Elegí uno, dos o más. Si elegís varios, el caso sale de uno de ellos al azar.
         </p>
+        <div className="mb-3 flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => setAparatos(APARATOS.map((a) => a.id))}>
+            Todos (aleatorio)
+          </Button>
+          {aparatos.length > 0 && (
+            <Button variant="ghost" size="sm" onClick={() => setAparatos([])}>
+              Limpiar
+            </Button>
+          )}
+        </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {APARATOS.map((a) => {
             const Icono = ICONOS[a.icono] ?? Stethoscope;
-            const activo = aparato === a.id;
+            const activo = aparatos.includes(a.id);
             return (
               <button
                 key={a.id}
                 type="button"
-                onClick={() => setAparato(a.id)}
+                onClick={() => toggle(a.id)}
                 className={cn(
                   "card-clinica group cursor-pointer p-4 text-left transition-all hover:-translate-y-0.5",
                   activo && "border-primary ring-2 ring-primary/25",
@@ -104,12 +116,7 @@ function Inicio() {
                   >
                     <Icono className="size-4.5" />
                   </span>
-                  <span>
-                    <span className="block font-medium">{a.nombre}</span>
-                    <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
-                      {a.descripcion}
-                    </span>
-                  </span>
+                  <span className="self-center font-medium">{a.nombre}</span>
                 </div>
               </button>
             );
@@ -148,17 +155,17 @@ function Inicio() {
       <div className="flex flex-wrap items-center gap-4">
         <Button
           size="lg"
-          disabled={!aparato}
+          disabled={aparatos.length === 0}
           onClick={() =>
-            aparato &&
-            navigate({ to: "/simulacion", search: { aparato, dificultad } })
+            aparatos.length > 0 &&
+            navigate({ to: "/simulacion", search: { aparato: aparatos.join(","), dificultad } })
           }
         >
           Comenzar simulación
         </Button>
-        {!aparato && (
+        {aparatos.length === 0 && (
           <span className="text-sm text-muted-foreground">
-            Seleccioná un aparato para empezar.
+            Seleccioná al menos un aparato para empezar.
           </span>
         )}
       </div>

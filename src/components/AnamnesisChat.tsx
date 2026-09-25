@@ -62,18 +62,17 @@ export function AnamnesisChat({
   return (
     <div className="card-clinica flex h-[min(62vh,560px)] flex-col overflow-hidden">
       <div className="border-b border-border bg-secondary/40 px-4 py-2.5 text-xs text-muted-foreground">
-        Consultorio · hablás directamente con {caso.paciente.nombre}
+        Consultorio · hablás directamente con el paciente
       </div>
       <Conversation className="flex-1">
         <ConversationContent className="gap-4">
           {messages.length === 0 && (
             <div className="mx-auto max-w-md py-10 text-center text-sm text-muted-foreground">
               <p className="mb-2 font-medium text-foreground">
-                {caso.paciente.nombre} entra al consultorio.
+                Un paciente entra al consultorio.
               </p>
               <p>
-                Presentate y empezá la entrevista. El paciente solo responde lo que le
-                preguntás.
+                Presentate y empezá la entrevista: nombre, edad, ocupación, motivo de consulta... El paciente solo responde lo que le preguntás.
               </p>
             </div>
           )}

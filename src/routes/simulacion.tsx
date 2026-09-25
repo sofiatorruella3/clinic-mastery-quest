@@ -53,7 +53,11 @@ function Simulacion() {
   const { aparato, dificultad } = Route.useSearch();
   const navigate = useNavigate();
 
-  const nombreAparato = APARATOS.find((a) => a.id === aparato)?.nombre ?? aparato;
+  const ids = aparato.split(",").filter(Boolean);
+  const [elegido] = useState(() => ids[Math.floor(Math.random() * ids.length)] ?? "cardiovascular");
+  const nombreAparato = APARATOS.find((a) => a.id === elegido)?.nombre ?? elegido;
+  const etiquetaAparato =
+    ids.length > 1 ? `Aleatorio entre ${ids.length} sistemas` : nombreAparato;
   const nombreDificultad = DIFICULTADES.find((d) => d.id === dificultad)?.nombre ?? dificultad;
 
   const [etapa, setEtapa] = useState<EtapaId>("anamnesis");
@@ -103,7 +107,7 @@ function Simulacion() {
     return (
       <GeneracionCaso
         parcial={parcial}
-        detalle={`${nombreAparato} · dificultad ${nombreDificultad.toLowerCase()}`}
+        detalle={`${etiquetaAparato} · dificultad ${nombreDificultad.toLowerCase()}`}
       />
     );
   }
@@ -139,26 +143,18 @@ function Simulacion() {
           <ArrowLeft className="size-4" /> Nuevo caso
         </Link>
         <span className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">
-          {nombreAparato} · Dificultad {nombreDificultad}
+          {etiquetaAparato} · Dificultad {nombreDificultad}
         </span>
       </div>
 
       <section className="card-clinica mb-6 p-6">
-        <div className="mb-3 flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
-          <Stethoscope className="mt-0.5 size-3.5 shrink-0" /> <span>{caso.ambito}</span>
+        <div className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
+          <Stethoscope className="size-3.5" /> Nuevo paciente
         </div>
-        <h1 className="text-3xl md:text-4xl">{caso.titulo}</h1>
-        <p className="mt-3 text-sm leading-relaxed">
-          <strong className="font-medium">{caso.paciente.nombre}</strong>, {caso.paciente.edad},{" "}
-          {caso.paciente.sexo}. {caso.paciente.ocupacion}. {caso.paciente.apariencia}
-        </p>
-        <p className="mt-2 text-sm leading-relaxed">
-          <span className="text-muted-foreground">Motivo de consulta: </span>
-          {caso.motivoConsulta}
-        </p>
-        <p className="mt-2 text-sm leading-relaxed">
-          <span className="text-muted-foreground">Signos vitales al ingreso: </span>
-          {caso.signosVitales}
+        <h1 className="text-3xl md:text-4xl">Un paciente espera ser atendido</h1>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          No tenés datos previos: obtené su filiación, motivo de consulta y antecedentes en la
+          anamnesis, y los signos vitales en el examen físico.
         </p>
       </section>
 
@@ -236,13 +232,13 @@ function Simulacion() {
       {etapa === "diagnostico" && (
         <Seccion
           titulo="Diagnóstico presuntivo"
-          ayuda="Escribí tu diagnóstico presuntivo, los principales diferenciales y los datos que los sostienen o descartan."
+          ayuda="Escribí tu diagnóstico presuntivo con los datos clave que lo sostienen. Los diferenciales solo mencionalos."
         >
           <Textarea
             value={diagnostico}
             onChange={(e) => setDiagnostico(e.target.value)}
             rows={10}
-            placeholder="Diagnóstico presuntivo, diferenciales y fundamentación..."
+            placeholder="Diagnóstico presuntivo y fundamentación. Diferenciales: ..."
             className="min-h-48"
           />
           <Avanzar onClick={() => setEtapa("tratamiento")} texto="Pasar al tratamiento" />
@@ -252,13 +248,13 @@ function Simulacion() {
       {etapa === "tratamiento" && (
         <Seccion
           titulo="Tratamiento"
-          ayuda="Definí conducta inicial: medidas generales, fármacos con dosis y vía, criterios de internación o derivación, interconsultas."
+          ayuda="Un pantallazo general de la conducta: medidas generales, grupos de fármacos, internación o derivación, interconsultas. No hace falta detallar dosis."
         >
           <Textarea
             value={tratamiento}
             onChange={(e) => setTratamiento(e.target.value)}
             rows={10}
-            placeholder="Conducta inicial, fármacos con dosis y vía, criterios de internación..."
+            placeholder="Conducta general: medidas, grupos de fármacos, internación o ambulatorio..."
             className="min-h-48"
           />
           <Avanzar onClick={() => setEtapa("seguimiento")} texto="Pasar al seguimiento" />
