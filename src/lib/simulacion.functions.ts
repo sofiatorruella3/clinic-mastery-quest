@@ -138,6 +138,11 @@ export const generarFeedback = createServerFn({ method: "POST" })
 ${CONTEXTO_ARG}
 Reglas de evaluación:
 - Puntajes de 0 a 100, exigentes pero justos según la dificultad del caso.
+- Prioridad: el foco pedagógico está en recabar y analizar buenos datos en Anamnesis, Examen físico, Estudios complementarios y Diagnóstico presuntivo. Evaluá esas etapas con mayor profundidad y peso en el puntaje global.
+- El estudiante empieza sin datos del paciente: valorá que haya obtenido filiación, motivo de consulta, antecedentes y signos vitales por sí mismo.
+- Tratamiento: evaluá solo el enfoque general (medidas, grupos de fármacos, internación/derivación). NO exijas ni corrijas dosis, vías o posologías; tu devolución de tratamiento también debe ser general, sin dosis.
+- Diferenciales: solo deben mencionarse. No penalices que no estén justificados, y en tu devolución listalos brevemente sin explicar por qué sí o por qué no cada uno.
+- Tratamiento y Seguimiento: comentarios breves.
 - Evaluá una etapa por cada una de: Anamnesis, Examen físico, Estudios complementarios, Diagnóstico presuntivo, Tratamiento, Seguimiento.
 - En cada etapa: qué hizo bien, qué hizo mal, qué faltó preguntar/hacer, y qué debería evitar (estudios innecesarios, iatrogenia, preguntas inductivas, omisión de banderas rojas, sobreindicación de antibióticos o imágenes, falta de consentimiento, sesgos).
 - Citá la guía o recomendación concreta que respalda cada señalamiento cuando sea posible, con nombre y año aproximado.
