@@ -68,7 +68,11 @@ Redactá "historiaCompleta", "hallazgosExamenFisico" y "resultadosEstudios" con 
             } catch (error) {
               controller.enqueue(
                 encoder.encode(
-                  JSON.stringify({ __error: (error as Error)?.message ?? "error" }) + "\n",
+                  JSON.stringify({
+                    __error: /payment required|402/i.test(String((error as Error)?.message))
+                      ? "Se agotaron los créditos de IA del espacio de trabajo. Cargá créditos para seguir generando casos."
+                      : ((error as Error)?.message ?? "error"),
+                  }) + "\n",
                 ),
               );
             } finally {
