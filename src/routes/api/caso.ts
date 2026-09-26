@@ -69,8 +69,10 @@ Redactá "historiaCompleta", "hallazgosExamenFisico" y "resultadosEstudios" con 
               controller.enqueue(
                 encoder.encode(
                   JSON.stringify({
-                    __error: /payment required|402/i.test(String((error as Error)?.message))
-                      ? "Se agotaron los créditos de IA del espacio de trabajo. Cargá créditos para seguir generando casos."
+                    __error: /payment required|402|insufficient_quota|quota/i.test(
+                      String((error as Error)?.message),
+                    )
+                      ? "Tu cuenta de OpenAI no tiene saldo disponible para usar la API. Cargá saldo en platform.openai.com para seguir generando casos."
                       : ((error as Error)?.message ?? "error"),
                   }) + "\n",
                 ),

@@ -36,6 +36,8 @@ export const Route = createFileRoute("/")({
         content:
           "Entrevistá al paciente, pedí estudios y recibí una devolución basada en guías nacionales e internacionales.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Inicio,
