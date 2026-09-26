@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   Activity,
   Baby,
@@ -68,6 +68,9 @@ function Inicio() {
           <Stethoscope className="size-3.5" />
           Simulación clínica interactiva
         </div>
+        <Link to="/historial" className="ml-3 text-sm text-primary underline-offset-4 hover:underline">
+          Mis casos anteriores →
+        </Link>
         <h1 className="max-w-2xl text-4xl leading-tight md:text-6xl">
           Practicá el razonamiento clínico como en el consultorio.
         </h1>

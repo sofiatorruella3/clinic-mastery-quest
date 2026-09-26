@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { generarFeedback, responderEtapa } from "@/lib/simulacion.functions";
 import { useCasoStream } from "@/lib/useCasoStream";
+import { guardarRegistro, obtenerRegistro } from "@/lib/historial";
 import {
   APARATOS,
   DIFICULTADES,
@@ -27,6 +28,7 @@ import { cn } from "@/lib/utils";
 const searchSchema = z.object({
   aparato: z.string().default("cardiovascular"),
   dificultad: z.enum(["baja", "moderada", "dificil"]).default("moderada"),
+  repetir: z.string().optional(),
 });
 
 export const Route = createFileRoute("/simulacion")({
@@ -50,11 +52,11 @@ export const Route = createFileRoute("/simulacion")({
 });
 
 function Simulacion() {
-  const { aparato, dificultad } = Route.useSearch();
+  const { aparato, dificultad, repetir } = Route.useSearch();
   const navigate = useNavigate();
 
   const ids = aparato.split(",").filter(Boolean);
-  const [elegido] = useState(() => ids[Math.floor(Math.random() * ids.length)] ?? "cardiovascular");
+  const [elegido] = useState(() => (repetir ? ids[0] : ids[Math.floor(Math.random() * ids.length)]) ?? "cardiovascular");
   const nombreAparato = APARATOS.find((a) => a.id === elegido)?.nombre ?? elegido;
   const etiquetaAparato =
     ids.length > 1 ? `Aleatorio entre ${ids.length} sistemas` : nombreAparato;
@@ -72,14 +74,16 @@ function Simulacion() {
   const pedirEtapa = useServerFn(responderEtapa);
   const pedirFeedback = useServerFn(generarFeedback);
 
-  const { parcial, caso, error: errorCaso, generando, generar } = useCasoStream();
+  const { parcial, caso, error: errorCaso, generando, generar, cargar } = useCasoStream();
 
   const iniciado = useRef(false);
   useEffect(() => {
     if (iniciado.current) return;
     iniciado.current = true;
-    void generar(nombreAparato, dificultad);
-  }, [generar, nombreAparato, dificultad]);
+    const previo = repetir ? obtenerRegistro(repetir) : undefined;
+    if (previo) cargar(previo.caso);
+    else void generar(nombreAparato, dificultad);
+  }, [generar, cargar, repetir, nombreAparato, dificultad]);
 
   const feedbackMutation = useMutation({
     mutationFn: () =>
@@ -96,6 +100,18 @@ function Simulacion() {
       }),
     onSuccess: (data) => {
       setFeedback(data as Feedback);
+      try {
+        guardarRegistro({
+          aparato: elegido,
+          aparatoNombre: nombreAparato,
+          dificultad,
+          caso: caso!,
+          respuestas: { anamnesis, examenFisico, estudios, diagnostico, tratamiento, seguimiento },
+          feedback: data as Feedback,
+        });
+      } catch {
+        /* almacenamiento no disponible */
+      }
       setEtapa("feedback");
       window.scrollTo({ top: 0, behavior: "smooth" });
     },
@@ -303,6 +319,9 @@ function Simulacion() {
           <FeedbackPanel feedback={feedback} />
           <div className="mt-8 flex flex-wrap gap-3">
             <Button onClick={() => navigate({ to: "/" })}>Resolver otro caso</Button>
+            <Button variant="outline" onClick={() => navigate({ to: "/historial" })}>
+              Ver mis casos anteriores
+            </Button>
           </div>
         </>
       )}

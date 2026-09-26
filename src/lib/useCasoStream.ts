@@ -60,9 +60,14 @@ export function useCasoStream() {
     }
   }, []);
 
+  const cargar = useCallback((c: Caso) => {
+    setError(null);
+    setCaso(c);
+  }, []);
+
   const reiniciar = useCallback(() => {
     enCurso.current = false;
   }, []);
 
-  return { parcial, caso, error, generando, generar, reiniciar };
+  return { parcial, caso, error, generando, generar, cargar, reiniciar };
 }
