@@ -36,6 +36,8 @@ export const Route = createFileRoute("/")({
         content:
           "Entrevistá al paciente, pedí estudios y recibí una devolución basada en guías nacionales e internacionales.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Inicio,
@@ -82,7 +84,7 @@ function Inicio() {
       </header>
 
       <section className="mb-10">
-        <h2 className="mb-1 text-2xl">1. Aparato o sistema</h2>
+        <h2 className="mb-1 text-2xl">Aparato o sistema</h2>
         <p className="mb-5 text-sm text-muted-foreground">
           Elegí uno, dos o más. Si elegís varios, el caso sale de uno de ellos al azar.
         </p>
@@ -128,7 +130,7 @@ function Inicio() {
       </section>
 
       <section className="mb-10">
-        <h2 className="mb-1 text-2xl">2. Dificultad</h2>
+        <h2 className="mb-1 text-2xl">Dificultad</h2>
         <p className="mb-5 text-sm text-muted-foreground">
           Define la complejidad del caso y la exigencia de la evaluación.
         </p>
