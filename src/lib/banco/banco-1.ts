@@ -20,10 +20,10 @@ export const BANCO_1: CasoBanco[] = [
       ["Irradiación", "irradia|corre|va hacia|se va|brazo|mandibula|cuello|espalda", "Se me va al brazo izquierdo y a la mandíbula.", 1],
       ["Intensidad", "intensidad|del 1 al 10|fuerte|cuanto duele|escala", "Un 9 sobre 10, nunca me dolió así.", 1],
       ["Síntomas acompañantes", "acompan|sudor|nausea|vomit|falta de aire|disnea|mareo|otro sintoma", "Transpiro mucho y tengo náuseas. Un poco de falta de aire.", 1],
-      ["Factores modificadores", "mejora|empeora|calma|alivia|reposo|respirar|posicion", "No cambia con nada, ni quedándome quieto ni respirando.", 0 as unknown as 1],
+      ["Factores modificadores", "mejora|empeora|calma|alivia|reposo|respirar|posicion", "No cambia con nada, ni quedándome quieto ni respirando."],
       ["Factores de riesgo cardiovascular", "presion|hipertens|diabet|azucar|colesterol|factores de riesgo", "Soy hipertenso hace 10 años y tengo el colesterol alto. Azúcar no.", 1],
       ["Tabaquismo", "fuma|tabaco|cigarr", "Fumo un atado por día desde los 20.", 1],
-      ["Medicación habitual", "medicacion|medicamento|remedio|toma algo|pastilla", "Enalapril, pero lo dejo seguido.", 0 as unknown as 1],
+      ["Medicación habitual", "medicacion|medicamento|remedio|toma algo|pastilla", "Enalapril, pero lo dejo seguido."],
       ["Antecedentes familiares", "familia|padre|madre|hermano|herencia", "Mi papá murió de un infarto a los 60."],
       ["Episodios previos", "antes|previo|otra vez|alguna vez|similar|esfuerzo", "Las últimas semanas me apretaba un poco el pecho al subir escaleras, pero se me pasaba."],
     ],
@@ -44,7 +44,7 @@ export const BANCO_1: CasoBanco[] = [
     trat: [["Activar reperfusión urgente (angioplastia primaria o fibrinolíticos)", "angioplastia|reperfusion|hemodinamia|cateterismo|cinecoronario|fibrinolis|trombolis|estreptoquinasa"], ["Antiagregación doble", "aspirina|aas|clopidogrel|ticagrelor|antiagreg|prasugrel"], ["Anticoagulación", "heparina|enoxaparina|anticoagul"], ["Internación en unidad coronaria y monitoreo", "unidad coronaria|uco|internacion|monitor"], ["Estatinas de alta intensidad", "estatina|atorvastatina|rosuvastatina"]],
     seg: [["Prevención secundaria: betabloqueantes, IECA, estatinas", "betabloq|ieca|enalapril|estatina|prevencion secundaria"], ["Cesación tabáquica", "tabaco|fumar|cesacion|tabaquismo"], ["Rehabilitación cardiovascular", "rehabilitacion"], ["Control de factores de riesgo y pautas de alarma", "pautas de alarma|factores de riesgo|dieta|actividad fisica|control"]],
     evitar: ["Demorar el ECG más de 10 minutos desde el ingreso en un dolor torácico.", "Esperar el resultado de la troponina para indicar reperfusión si el ECG ya muestra supradesnivel del ST.", "Indicar nitratos sin descartar compromiso de ventrículo derecho en un IAM inferior."],
-    guias: ["Consenso de Síndromes Coronarios Agudos con elevación del ST – Sociedad Argentina de Cardiología (SAC)", "Guías ESC 2023 para el manejo de los síndromes coronarios agudos"],
+    guias: ["Consenso de Síndromes Coronarios Agudos con elevación del ST – Sociedad Argentina de Cardiología (SAC)", "Guía de Práctica Clínica Nacional sobre Prevención Cardiovascular – Ministerio de Salud de la Nación"],
   },
   {
     id: "cv-moderada",
@@ -93,7 +93,7 @@ export const BANCO_1: CasoBanco[] = [
     trat: [["Diuréticos de asa endovenosos", "furosemida|diuretico"], ["Oxigenoterapia / VNI si es necesario", "oxigeno|vni|ventilacion no invasiva|cpap"], ["Control de frecuencia de la FA", "control de frecuencia|betabloq|digoxina|amiodarona|diltiazem|frecuencia cardiaca"], ["Anticoagulación por FA", "anticoagul|heparina|enoxaparina|acenocumarol|apixaban|rivaroxaban"], ["Internación, balance hídrico y restricción de sodio", "internacion|balance|restriccion|sodio|sal|diuresis"]],
     seg: [["Tratamiento modificador de pronóstico (IECA/ARNI, betabloqueantes, antialdosterónicos, iSGLT2)", "betabloq|espironolactona|antialdost|isglt2|dapagliflozina|empagliflozina|sacubitril|arni|ieca|enalapril"], ["Educación: dieta hiposódica, peso diario, adherencia", "peso|dieta|sal|sodio|adherencia|educacion"], ["Control precoz ambulatorio (7-14 días) y pautas de alarma", "control|pautas de alarma|7 dias|14 dias|dias|consulta"], ["Anticoagulación crónica según CHA2DS2-VASc", "anticoagul|cha2ds2|chads"]],
     evitar: ["Olvidar buscar el factor desencadenante (FA, transgresión, abandono del tratamiento).", "Indicar AINEs o antiarrítmicos inotrópicos negativos (verapamilo) con FEVI reducida.", "Omitir la evaluación del riesgo tromboembólico en la fibrilación auricular."],
-    guias: ["Consenso de Insuficiencia Cardíaca – Sociedad Argentina de Cardiología (SAC)", "Guías ESC 2021 (actualización 2023) de insuficiencia cardíaca aguda y crónica", "Consenso de Fibrilación Auricular – SAC"],
+    guias: ["Consenso de Insuficiencia Cardíaca – Sociedad Argentina de Cardiología (SAC)", "Consenso de Fibrilación Auricular – SAC"],
   },
   {
     id: "cv-dificil",
@@ -136,7 +136,7 @@ export const BANCO_1: CasoBanco[] = [
     trat: [["Cirugía cardiovascular de urgencia", "cirugia|cirujano|quirurg|cardiovascular|reemplazo"], ["Control del dolor con opioides", "morfina|opioide|analges|dolor"], ["Control estricto de FC y TA (betabloqueante EV, luego vasodilatador)", "betabloq|labetalol|esmolol|nitroprusiato|control de la presion|frecuencia|tension"], ["Internación en unidad de cuidados intensivos", "uti|unidad coronaria|terapia|cuidados intensivos|internacion"]],
     seg: [["Control estricto de la TA de por vida", "presion|tension|hipertens|antihipertens"], ["Imágenes seriadas de aorta", "angiotomo|tomografia|imagen|resonancia|control de aorta"], ["Suspender cocaína y tabaco", "cocaina|droga|tabaco|fumar|consumo"], ["Tamizaje familiar", "familia|familiares|tamizaje|screening"]],
     evitar: ["Anticoagular o antiagregar ante un dolor torácico desgarrante sin descartar disección.", "Omitir la toma de TA en ambos brazos y la palpación de pulsos.", "Usar vasodilatadores sin betabloqueo previo (taquicardia refleja)."],
-    guias: ["Guías ESC 2024 de enfermedades de la aorta y arterias periféricas", "Consenso de Síndromes Aórticos Agudos – Sociedad Argentina de Cardiología"],
+    guias: ["Guía Nacional de Hipertensión Arterial – Ministerio de Salud de la Nación", "Consenso de Síndromes Aórticos Agudos – Sociedad Argentina de Cardiología"],
   },
   // ───────── RESPIRATORIO ─────────
   {
@@ -181,7 +181,7 @@ export const BANCO_1: CasoBanco[] = [
     trat: [["Tratamiento ambulatorio por CURB-65 bajo", "ambulatorio|domicilio|curb|curb65|psi|casa"], ["Antibiótico empírico (amoxicilina)", "amoxicilina|antibiotico|betalact|macrolido|claritromicina|azitromicina"], ["Antitérmicos, hidratación y reposo", "paracetamol|antiterm|hidrat|reposo|ibuprofeno"]],
     seg: [["Control clínico a las 48-72 h", "48|72|control|horas|reevalu"], ["Pautas de alarma", "alarma|signos de alarma|pautas|consultar"], ["Cesación tabáquica y vacunación antigripal y antineumocócica", "vacuna|antineumococ|antigripal|tabaco|fumar"]],
     evitar: ["Internar a un paciente con CURB-65 bajo sin otros criterios.", "Indicar quinolonas como primera línea en un paciente sano sin factores de riesgo.", "Olvidar calcular un score de gravedad (CURB-65 o PSI)."],
-    guias: ["Recomendaciones para el manejo de la neumonía aguda de la comunidad – Sociedad Argentina de Infectología (SADI) y AAMR", "Guía ATS/IDSA 2019 de neumonía adquirida en la comunidad"],
+    guias: ["Recomendaciones para el manejo de la neumonía aguda de la comunidad – Sociedad Argentina de Infectología (SADI) y AAMR", "Guía de Práctica Clínica Nacional de Neumonía Aguda de la Comunidad – Ministerio de Salud de la Nación"],
   },
   {
     id: "resp-moderada",
@@ -225,7 +225,7 @@ export const BANCO_1: CasoBanco[] = [
     trat: [["Broncodilatadores de acción corta (salbutamol ± ipratropio)", "salbutamol|ipratropio|broncodilat|nebuliz|beta 2|agonista"], ["Corticoides sistémicos por 5 días", "corticoide|meprednisona|prednisona|hidrocortisona|metilprednisolona"], ["Antibiótico por esputo purulento", "antibiotico|amoxicilina|clavulan|levofloxacina"], ["Oxígeno controlado (objetivo SpO2 88-92%) y VNI si acidosis", "oxigeno|88|92|venturi|vni|ventilacion no invasiva|bipap"]],
     seg: [["Broncodilatadores de acción prolongada (LAMA/LABA)", "lama|laba|tiotropio|acción prolongada|accion prolongada|mantenimiento|indacaterol"], ["Cesación tabáquica completa", "tabaco|fumar|cesacion"], ["Vacunación antigripal y antineumocócica", "vacuna|antigripal|neumococ"], ["Rehabilitación respiratoria y control de técnica inhalatoria", "rehabilitacion|tecnica inhalatoria|espirometria|control"]],
     evitar: ["Administrar oxígeno a alto flujo sin control (riesgo de hipercapnia).", "Indicar corticoides sistémicos por más de 5-7 días.", "Olvidar evaluar criterios de ventilación no invasiva ante acidosis respiratoria."],
-    guias: ["GOLD 2025 – Global Initiative for Chronic Obstructive Lung Disease", "Guía de Práctica Clínica Nacional de diagnóstico y tratamiento de la EPOC – Ministerio de Salud de la Nación", "Consenso de EPOC – Asociación Argentina de Medicina Respiratoria (AAMR)"],
+    guias: ["Guía de Práctica Clínica Nacional de diagnóstico y tratamiento de la EPOC – Ministerio de Salud de la Nación", "Consenso de EPOC – Asociación Argentina de Medicina Respiratoria (AAMR)"],
   },
   {
     id: "resp-dificil",
@@ -270,7 +270,7 @@ export const BANCO_1: CasoBanco[] = [
     trat: [["Anticoagulación inmediata (heparina)", "heparina|enoxaparina|anticoagul"], ["Oxigenoterapia", "oxigeno"], ["Internación en unidad cerrada con monitoreo", "uti|unidad coronaria|terapia|monitoreo|internacion|cuidados intensivos"], ["Trombólisis de rescate si deterioro hemodinámico", "trombolis|fibrinolis|alteplase|rtpa|rescate"]],
     seg: [["Anticoagulación oral por al menos 3 meses", "anticoagul|3 meses|tres meses|rivaroxaban|apixaban|acenocumarol|warfarina"], ["Suspender terapia hormonal", "hormona|suspender|estrogeno"], ["Control de sangrado y adherencia", "sangrado|adherencia|control"], ["Pautas de alarma", "alarma|pautas"]],
     evitar: ["Pedir dímero D con probabilidad clínica alta (retrasa el diagnóstico).", "Demorar la anticoagulación esperando la confirmación si la sospecha es alta y no hay contraindicación.", "Olvidar estratificar el riesgo (PESI, función del VD, troponina)."],
-    guias: ["Guías ESC 2019 de diagnóstico y manejo del tromboembolismo pulmonar agudo", "Consenso de Enfermedad Tromboembólica – Sociedad Argentina de Cardiología / Grupo CAHT"],
+    guias: ["Consenso Argentino de Tromboembolismo de Pulmón – Asociación Argentina de Medicina Respiratoria (AAMR)", "Consenso de Enfermedad Tromboembólica – Sociedad Argentina de Cardiología / Grupo CAHT"],
   },
   // ───────── DIGESTIVO ─────────
   {
@@ -315,7 +315,7 @@ export const BANCO_1: CasoBanco[] = [
     trat: [["Interconsulta con cirugía y apendicectomía", "cirugia|cirujano|apendicectomia|quirurg|operar|laparoscop"], ["Ayuno y hidratación endovenosa", "ayuno|hidratacion|plan de hidratacion|nada por boca|endovenoso"], ["Analgesia", "analges|dolor|ketorolac|dipirona|morfina|paracetamol"], ["Antibiótico profiláctico prequirúrgico", "antibiotico|cefazolina|metronidazol|profilaxis|ampicilina"]],
     seg: [["Control de herida quirúrgica", "herida|curacion|control"], ["Pautas de alarma posoperatorias (fiebre, dolor, vómitos)", "alarma|fiebre|pautas"], ["Retorno progresivo a la dieta y actividad", "dieta|actividad|reposo"]],
     evitar: ["Indicar antibióticos o analgesia sin haber definido la conducta con el cirujano.", "Dar el alta sin reevaluación a un paciente con dolor en fosa ilíaca derecha y leucocitosis.", "No calcular un score clínico (Alvarado / AIR)."],
-    guias: ["Guías WSES (Jerusalem) 2020 de diagnóstico y tratamiento de la apendicitis aguda", "Consenso de la Asociación Argentina de Cirugía sobre abdomen agudo"],
+    guias: ["Consenso de la Asociación Argentina de Cirugía sobre abdomen agudo"],
   },
   {
     id: "dig-moderada",
@@ -358,7 +358,7 @@ export const BANCO_1: CasoBanco[] = [
     trat: [["Reanimación con cristaloides y 2 vías periféricas gruesas", "cristaloide|solucion fisiologica|ringer|via|expansion|reanimacion|hidratacion"], ["Transfusión restrictiva (Hb menor a 7 g/dL, o 8 si cardiópata)", "transfus|globulos rojos|hemoderivado|sangre"], ["Inhibidores de la bomba de protones endovenosos", "omeprazol|pantoprazol|ibp|inhibidor de la bomba"], ["Endoscopía dentro de las 24 h con tratamiento hemostático", "endoscop|hemostas|24"], ["Suspender AINEs", "suspender|aine|diclofenac"]],
     seg: [["Investigar y erradicar Helicobacter pylori", "helicobacter|pylori|erradicacion"], ["IBP vía oral por 8 semanas", "ibp|omeprazol|8 semanas|oral"], ["Evitar AINEs; alternativas analgésicas", "aine|paracetamol|evitar"], ["Control de hemoglobina y pautas de alarma", "hemoglobina|hemograma|alarma|control"]],
     evitar: ["Transfundir de manera liberal hasta Hb normal (aumenta el resangrado).", "Colocar sonda nasogástrica de rutina.", "Olvidar calcular el score de Glasgow-Blatchford."],
-    guias: ["Guía de la Sociedad Argentina de Gastroenterología (SAGE) sobre hemorragia digestiva alta no variceal", "Guía ESGE 2021 de hemorragia digestiva alta no variceal", "Consenso Internacional ICON-UGIB 2019"],
+    guias: ["Guía de la Sociedad Argentina de Gastroenterología (SAGE) sobre hemorragia digestiva alta no variceal", "Guía de manejo de la hemorragia digestiva – Sociedad Argentina de Terapia Intensiva (SATI)"],
   },
   {
     id: "dig-dificil",
@@ -403,6 +403,6 @@ export const BANCO_1: CasoBanco[] = [
     trat: [["Reanimación con cristaloides y vasopresores si persiste la hipotensión", "cristaloide|solucion fisiologica|ringer|expansion|reanimacion|noradrenalina|vasopresor"], ["Antibióticos EV precoces (sin betalactámicos por alergia: p. ej. quinolona + metronidazol / carbapenem según alergia)", "antibiotico|ciprofloxacina|metronidazol|meropenem|carbapenem|levofloxacina|imipenem"], ["Drenaje biliar urgente (CPRE)", "cpre|drenaje|papilotomia|endoscop"], ["Internación en terapia intensiva", "uti|terapia|cuidados intensivos|internacion"]],
     seg: [["Colecistectomía diferida", "colecistectomia|cirugia|vesicula"], ["Ajuste antibiótico según cultivos", "cultivo|antibiograma|ajuste|desescal"], ["Control de función hepática y renal", "hepatograma|renal|creatinina|control|laboratorio"]],
     evitar: ["Indicar betalactámicos penicilínicos en una paciente alérgica a la penicilina.", "Demorar el drenaje biliar en una colangitis grave.", "Atribuir la confusión a la edad sin considerar la sepsis."],
-    guias: ["Guías de Tokio 2018 (TG18) para colangitis y colecistitis agudas", "Campaña Sobreviviendo a la Sepsis 2021", "Recomendaciones de la Sociedad Argentina de Terapia Intensiva (SATI) sobre sepsis"],
+    guias: ["Consenso de la Asociación Argentina de Cirugía sobre patología biliar", "Recomendaciones de la Sociedad Argentina de Terapia Intensiva (SATI) sobre sepsis"],
   },
 ];
