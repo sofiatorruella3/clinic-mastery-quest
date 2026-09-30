@@ -95,7 +95,7 @@ export const BANCO_2: CasoBanco[] = [
     vitales: "TA 92/55 mmHg (habitual 140/80), FC 96 lpm, FR 18 rpm, T 36.9 °C, SpO2 96%.",
     dx: "Lesión renal aguda prerrenal por deshidratación, potenciada por IECA, diuréticos y AINEs, con hiperpotasemia",
     dxClaves: "lesion renal aguda|insuficiencia renal aguda|ira|lra|falla renal aguda|prerrenal",
-    difs: [["Necrosis tubular aguda", "necrosis tubular|ntа|ntа|nta"], ["Obstrucción urinaria (retención)", "obstruc|retencion|globo vesical|posrenal"], ["Enfermedad renal crónica agudizada", "cronica"], ["Sepsis de foco urinario", "sepsis"]],
+    difs: [["Necrosis tubular aguda", "necrosis tubular|nta"], ["Obstrucción urinaria (retención)", "obstruc|retencion|globo vesical|posrenal"], ["Enfermedad renal crónica agudizada", "cronica"], ["Sepsis de foco urinario", "sepsis"]],
     anam: [
       ["Evolución", "cuando|hace cuanto|desde|empezo|dias", "(Cuidadora) Hace unos cinco días tuvo diarrea y desde ahí casi no toma líquidos.", 1],
       ["Diarrea / vómitos", "diarrea|vomit|deposic|materia fecal", "(Cuidadora) Diarrea líquida, cuatro o cinco veces por día, ya está mejor.", 1],

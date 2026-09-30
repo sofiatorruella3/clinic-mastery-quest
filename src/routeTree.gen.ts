@@ -12,8 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HistorialRouteImport } from './routes/historial'
 import { Route as SimulacionRouteImport } from './routes/simulacion'
-import { Route as ApiAnamnesisRouteImport } from './routes/api/anamnesis'
-import { Route as ApiCasoRouteImport } from './routes/api/caso'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -30,59 +28,35 @@ const SimulacionRoute = SimulacionRouteImport.update({
   path: '/simulacion',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAnamnesisRoute = ApiAnamnesisRouteImport.update({
-  id: '/api/anamnesis',
-  path: '/api/anamnesis',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiCasoRoute = ApiCasoRouteImport.update({
-  id: '/api/caso',
-  path: '/api/caso',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/historial': typeof HistorialRoute
   '/simulacion': typeof SimulacionRoute
-  '/api/anamnesis': typeof ApiAnamnesisRoute
-  '/api/caso': typeof ApiCasoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/historial': typeof HistorialRoute
   '/simulacion': typeof SimulacionRoute
-  '/api/anamnesis': typeof ApiAnamnesisRoute
-  '/api/caso': typeof ApiCasoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/historial': typeof HistorialRoute
   '/simulacion': typeof SimulacionRoute
-  '/api/anamnesis': typeof ApiAnamnesisRoute
-  '/api/caso': typeof ApiCasoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/historial' | '/simulacion' | '/api/anamnesis' | '/api/caso'
+  fullPaths: '/' | '/historial' | '/simulacion'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/historial' | '/simulacion' | '/api/anamnesis' | '/api/caso'
-  id:
-    | '__root__'
-    | '/'
-    | '/historial'
-    | '/simulacion'
-    | '/api/anamnesis'
-    | '/api/caso'
+  to: '/' | '/historial' | '/simulacion'
+  id: '__root__' | '/' | '/historial' | '/simulacion'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HistorialRoute: typeof HistorialRoute
   SimulacionRoute: typeof SimulacionRoute
-  ApiAnamnesisRoute: typeof ApiAnamnesisRoute
-  ApiCasoRoute: typeof ApiCasoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -108,20 +82,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SimulacionRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/anamnesis': {
-      id: '/api/anamnesis'
-      path: '/api/anamnesis'
-      fullPath: '/api/anamnesis'
-      preLoaderRoute: typeof ApiAnamnesisRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/caso': {
-      id: '/api/caso'
-      path: '/api/caso'
-      fullPath: '/api/caso'
-      preLoaderRoute: typeof ApiCasoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -129,8 +89,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HistorialRoute: HistorialRoute,
   SimulacionRoute: SimulacionRoute,
-  ApiAnamnesisRoute: ApiAnamnesisRoute,
-  ApiCasoRoute: ApiCasoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
