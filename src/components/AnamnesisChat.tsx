@@ -1,112 +1,85 @@
-import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport, type UIMessage } from "ai";
-import { useEffect, useMemo, useRef } from "react";
+import { Send } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
-import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
-import {
-  PromptInput,
-  PromptInputFooter,
-  PromptInputSubmit,
-  PromptInputTextarea,
-} from "@/components/ai-elements/prompt-input";
-import { Shimmer } from "@/components/ai-elements/shimmer";
-import type { Caso } from "@/lib/simulacion-tipos";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { responderPaciente } from "@/lib/banco/motor";
+import type { CasoBanco } from "@/lib/banco/tipos";
+import { cn } from "@/lib/utils";
 
-export function textoDeMensaje(m: UIMessage) {
-  return m.parts
-    .filter((p) => p.type === "text")
-    .map((p) => (p as { text: string }).text)
-    .join(" ")
-    .trim();
-}
+type Msg = { de: "medico" | "paciente"; texto: string };
 
 export function AnamnesisChat({
-  caso,
+  banco,
   onTranscripcion,
 }: {
-  caso: Caso;
-  onTranscripcion: (texto: string) => void;
+  banco: CasoBanco;
+  onTranscripcion: (texto: string, ids: string[]) => void;
 }) {
-  const transport = useMemo(
-    () =>
-      new DefaultChatTransport({
-        api: "/api/anamnesis",
-        body: { caso },
-      }),
-    [caso],
-  );
-
-  const { messages, sendMessage, status } = useChat({ transport });
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [mensajes, setMensajes] = useState<Msg[]>([]);
+  const [ids, setIds] = useState<string[]>([]);
+  const [texto, setTexto] = useState("");
+  const finRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const texto = messages
-      .map(
-        (m) =>
-          `${m.role === "user" ? "Estudiante" : "Paciente"}: ${textoDeMensaje(m)}`,
-      )
-      .filter((l) => l.split(": ")[1])
-      .join("\n");
-    onTranscripcion(texto);
-  }, [messages, onTranscripcion]);
+    onTranscripcion(
+      mensajes.map((m) => `${m.de === "medico" ? "Estudiante" : "Paciente"}: ${m.texto}`).join("\n"),
+      ids,
+    );
+    finRef.current?.scrollIntoView({ block: "nearest" });
+  }, [mensajes, ids, onTranscripcion]);
 
-  useEffect(() => {
-    if (status === "ready") textareaRef.current?.focus();
-  }, [status]);
+  const enviar = () => {
+    const q = texto.trim();
+    if (!q) return;
+    const r = responderPaciente(banco, q);
+    setMensajes((p) => [...p, { de: "medico", texto: q }, { de: "paciente", texto: r.texto }]);
+    setIds((p) => Array.from(new Set([...p, ...r.ids])));
+    setTexto("");
+  };
 
   return (
     <div className="card-clinica flex h-[min(62vh,560px)] flex-col overflow-hidden">
       <div className="border-b border-border bg-secondary/40 px-4 py-2.5 text-xs text-muted-foreground">
-        Consultorio · hablás directamente con el paciente
+        Consultorio · el paciente responde según el tema que le preguntes
       </div>
-      <Conversation className="flex-1">
-        <ConversationContent className="gap-4">
-          {messages.length === 0 && (
-            <div className="mx-auto max-w-md py-10 text-center text-sm text-muted-foreground">
-              <p className="mb-2 font-medium text-foreground">
-                Un paciente entra al consultorio.
-              </p>
-              <p>
-                Presentate y empezá la entrevista: nombre, edad, ocupación, motivo de consulta... El paciente solo responde lo que le preguntás.
-              </p>
-            </div>
-          )}
-          {messages.map((m) => (
-            <Message key={m.id} from={m.role}>
-              <MessageContent>
-                <MessageResponse>{textoDeMensaje(m)}</MessageResponse>
-              </MessageContent>
-            </Message>
-          ))}
-          {status === "submitted" && (
-            <Shimmer className="px-1 text-sm">El paciente piensa...</Shimmer>
-          )}
-        </ConversationContent>
-        <ConversationScrollButton />
-      </Conversation>
-      <div className="border-t border-border p-3">
-        <PromptInput
-          onSubmit={(message, event) => {
-            const texto = message.text?.trim();
-            if (!texto || status === "streaming" || status === "submitted") return;
-            sendMessage({ text: texto });
-            event.currentTarget.reset();
+      <div className="flex-1 space-y-3 overflow-y-auto p-4">
+        {mensajes.length === 0 && (
+          <div className="mx-auto max-w-md py-10 text-center text-sm text-muted-foreground">
+            <p className="mb-2 font-medium text-foreground">Un paciente entra al consultorio.</p>
+            <p>Preguntá una cosa por vez: nombre, edad, qué le pasa, desde cuándo, cómo es el dolor, antecedentes, medicación...</p>
+          </div>
+        )}
+        {mensajes.map((m, i) => (
+          <div
+            key={i}
+            className={cn(
+              "max-w-[80%] rounded-lg px-3 py-2 text-sm leading-relaxed",
+              m.de === "medico" ? "ml-auto bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground",
+            )}
+          >
+            {m.texto}
+          </div>
+        ))}
+        <div ref={finRef} />
+      </div>
+      <div className="flex gap-2 border-t border-border p-3">
+        <Textarea
+          value={texto}
+          onChange={(e) => setTexto(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              enviar();
+            }
           }}
-        >
-          <PromptInputTextarea
-            ref={textareaRef}
-            autoFocus
-            placeholder="¿Qué le preguntás al paciente?"
-          />
-          <PromptInputFooter className="justify-end">
-            <PromptInputSubmit status={status} />
-          </PromptInputFooter>
-        </PromptInput>
+          rows={2}
+          placeholder="¿Qué le preguntás al paciente?"
+          className="resize-none"
+        />
+        <Button onClick={enviar} disabled={!texto.trim()} aria-label="Enviar">
+          <Send className="size-4" />
+        </Button>
       </div>
     </div>
   );
