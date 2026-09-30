@@ -163,7 +163,7 @@ export function evaluar(
 
   const etapas = [anam, ex, est, dx, trat, seg];
   const pesos = [0.25, 0.2, 0.2, 0.2, 0.075, 0.075];
-  const global = Math.round(etapas.reduce((s, e, i) => s + e.puntaje * pesos[i], 0));
+  const global = Math.round(etapas.reduce((s, e, i) => s + e.puntaje * (pesos[i] ?? 0), 0));
 
   const debil = [...etapas].sort((a, c) => a.puntaje - c.puntaje).slice(0, 2);
   return {

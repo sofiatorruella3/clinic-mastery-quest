@@ -1,18 +1,15 @@
-import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, ArrowRight, Loader2, Send, Stethoscope } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 
 import { AnamnesisChat } from "@/components/AnamnesisChat";
 import { FeedbackPanel } from "@/components/FeedbackPanel";
-import { GeneracionCaso } from "@/components/GeneracionCaso";
 import { MessageResponse } from "@/components/ai-elements/message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { generarFeedback, responderEtapa } from "@/lib/simulacion.functions";
-import { useCasoStream } from "@/lib/useCasoStream";
+import { aCaso, buscarCaso, elegirCaso, evaluar, responderSolicitud } from "@/lib/banco/motor";
+import type { CasoBanco } from "@/lib/banco/tipos";
 import { guardarRegistro, obtenerRegistro } from "@/lib/historial";
 import {
   APARATOS,
@@ -73,78 +70,48 @@ function Simulacion() {
   const [seguimiento, setSeguimiento] = useState("");
   const [feedback, setFeedback] = useState<Feedback | null>(null);
 
-  const pedirEtapa = useServerFn(responderEtapa);
-  const pedirFeedback = useServerFn(generarFeedback);
-
-  const { parcial, caso, error: errorCaso, generando, generar, cargar } = useCasoStream();
+  const [anamnesisIds, setAnamnesisIds] = useState<string[]>([]);
+  const [banco, setBanco] = useState<CasoBanco | null>(null);
 
   const iniciado = useRef(false);
   useEffect(() => {
     if (iniciado.current) return;
     iniciado.current = true;
     const previo = repetir ? obtenerRegistro(repetir) : undefined;
-    if (previo) cargar(previo.caso);
-    else void generar(nombreAparato, dificultad);
-  }, [generar, cargar, repetir, nombreAparato, dificultad]);
+    setBanco(buscarCaso(previo?.caso.bancoId) ?? elegirCaso(elegido, dificultad));
+  }, [repetir, elegido, dificultad]);
 
-  const feedbackMutation = useMutation({
-    mutationFn: () =>
-      pedirFeedback({
-        data: {
-          caso: caso!,
-          anamnesis,
-          examenFisico,
-          estudios,
-          diagnostico,
-          tratamiento,
-          seguimiento,
-        },
-      }),
-    onSuccess: (data) => {
-      setFeedback(data as Feedback);
-      try {
-        guardarRegistro({
-          aparato: elegido,
-          aparatoNombre: nombreAparato,
-          dificultad,
-          caso: caso!,
-          respuestas: { anamnesis, examenFisico, estudios, diagnostico, tratamiento, seguimiento },
-          feedback: data as Feedback,
-        });
-      } catch {
-        /* almacenamiento no disponible */
-      }
-      setEtapa("feedback");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    },
-  });
+  const finalizar = () => {
+    if (!banco || !caso) return;
+    const data = evaluar(banco, { anamnesisIds, examenFisico, estudios, diagnostico, tratamiento, seguimiento });
+    setFeedback(data);
+    try {
+      guardarRegistro({
+        aparato: banco.aparato,
+        aparatoNombre: APARATOS.find((x) => x.id === banco.aparato)?.nombre ?? nombreAparato,
+        dificultad,
+        caso,
+        respuestas: { anamnesis, examenFisico, estudios, diagnostico, tratamiento, seguimiento },
+        feedback: data,
+      });
+    } catch {
+      /* almacenamiento no disponible */
+    }
+    setEtapa("feedback");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-  const onTranscripcion = useCallback((t: string) => setAnamnesis(t), []);
+  const onTranscripcion = useCallback((t: string, ids: string[]) => {
+    setAnamnesis(t);
+    setAnamnesisIds(ids);
+  }, []);
 
-  if (!caso && !errorCaso) {
+  const caso: Caso | null = useMemo(() => (banco ? aCaso(banco) : null), [banco]);
+
+  if (!banco || !caso) {
     return (
-      <GeneracionCaso
-        parcial={parcial}
-        detalle={`${etiquetaAparato} · dificultad ${nombreDificultad.toLowerCase()}`}
-      />
-    );
-  }
-
-  if (!caso) {
-    return (
-      <main className="mx-auto max-w-2xl px-5 py-24 text-center">
-        <h1 className="text-3xl">No se pudo generar el caso</h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          {errorCaso ?? "Ocurrió un problema al crear la simulación."}
-        </p>
-        <div className="mt-6 flex justify-center gap-3">
-          <Button disabled={generando} onClick={() => void generar(nombreAparato, dificultad)}>
-            Reintentar
-          </Button>
-          <Button variant="outline" onClick={() => navigate({ to: "/" })}>
-            Volver al inicio
-          </Button>
-        </div>
+      <main className="mx-auto flex max-w-2xl items-center justify-center gap-2 px-5 py-24 text-sm text-muted-foreground">
+        <Loader2 className="size-4 animate-spin" /> Preparando el caso...
       </main>
     );
   }
@@ -205,7 +172,7 @@ function Simulacion() {
           titulo="Anamnesis"
           ayuda="Entrevistá al paciente como en el consultorio. Preguntá una cosa por vez: solo responde lo que le preguntes."
         >
-          <AnamnesisChat caso={caso} onTranscripcion={onTranscripcion} />
+          <AnamnesisChat banco={banco} onTranscripcion={onTranscripcion} />
           <Avanzar onClick={() => setEtapa("examen")} texto="Pasar al examen físico" />
         </Seccion>
       )}
@@ -216,11 +183,10 @@ function Simulacion() {
           ayuda="Indicá qué maniobras realizás (ej.: 'inspección general, auscultación cardíaca y pulmonar, palpación abdominal, edemas de MMII'). Solo vas a obtener los hallazgos de lo que pidas."
         >
           <EtapaSolicitudes
-            caso={caso}
+            banco={banco}
             etapaId="examen"
             solicitudes={examenFisico}
             setSolicitudes={setExamenFisico}
-            pedirEtapa={pedirEtapa}
             placeholder="Ej.: auscultación cardíaca y pulmonar, TA en ambos brazos, pulsos periféricos"
           />
           <Avanzar onClick={() => setEtapa("estudios")} texto="Pasar a estudios complementarios" />
@@ -233,11 +199,10 @@ function Simulacion() {
           ayuda="Solicitá los estudios que consideres necesarios (laboratorio, ECG, imágenes, cultivos). Recordá el criterio de costo-efectividad."
         >
           <EtapaSolicitudes
-            caso={caso}
+            banco={banco}
             etapaId="estudios"
             solicitudes={estudios}
             setSolicitudes={setEstudios}
-            pedirEtapa={pedirEtapa}
             placeholder="Ej.: laboratorio con hemograma, urea, creatinina, ionograma y troponina; ECG de 12 derivaciones; Rx tórax F y P"
           />
           <Avanzar
@@ -294,24 +259,10 @@ function Simulacion() {
           <div className="mt-5 flex flex-wrap items-center gap-3">
             <Button
               size="lg"
-              disabled={feedbackMutation.isPending}
-              onClick={() => feedbackMutation.mutate()}
+              onClick={finalizar}
             >
-              {feedbackMutation.isPending ? (
-                <>
-                  <Loader2 className="size-4 animate-spin" /> Evaluando según guías...
-                </>
-              ) : (
-                <>
-                  Finalizar y recibir devolución <ArrowRight className="size-4" />
-                </>
-              )}
+              Finalizar y recibir devolución <ArrowRight className="size-4" />
             </Button>
-            {feedbackMutation.isError && (
-              <span className="text-sm text-destructive">
-                No se pudo generar la devolución. Probá de nuevo.
-              </span>
-            )}
           </div>
         </Seccion>
       )}
@@ -360,42 +311,25 @@ function Avanzar({ onClick, texto }: { onClick: () => void; texto: string }) {
 }
 
 function EtapaSolicitudes({
-  caso,
+  banco,
   etapaId,
   solicitudes,
   setSolicitudes,
-  pedirEtapa,
   placeholder,
 }: {
-  caso: Caso;
+  banco: CasoBanco;
   etapaId: "examen" | "estudios";
   solicitudes: SolicitudEtapa[];
   setSolicitudes: React.Dispatch<React.SetStateAction<SolicitudEtapa[]>>;
-  pedirEtapa: (opts: {
-    data: {
-      caso: Caso;
-      etapa: "examen" | "estudios";
-      pedido: string;
-      previos: string[];
-    };
-  }) => Promise<{ hallazgo: string }>;
   placeholder: string;
 }) {
   const [pedido, setPedido] = useState("");
-
-  const mutation = useMutation({
-    mutationFn: (texto: string) =>
-      pedirEtapa({
-        data: {
-          caso,
-          etapa: etapaId,
-          pedido: texto,
-          previos: solicitudes.map((s) => s.pedido),
-        },
-      }),
-    onSuccess: (data, texto) =>
-      setSolicitudes((prev) => [...prev, { pedido: texto, hallazgo: data.hallazgo }]),
-  });
+  const mutation = {
+    isPending: false,
+    isError: false,
+    mutate: (texto: string) =>
+      setSolicitudes((prev) => [...prev, { pedido: texto, hallazgo: responderSolicitud(banco, etapaId, texto) }]),
+  };
 
   return (
     <div className="space-y-4">
