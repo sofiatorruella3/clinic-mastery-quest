@@ -89,6 +89,7 @@ export const DIFICULTADES: { id: Dificultad; nombre: string; detalle: string }[]
 ];
 
 export type Caso = {
+  bancoId?: string;
   titulo: string;
   ambito: string;
   motivoConsulta: string;

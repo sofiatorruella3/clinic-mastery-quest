@@ -176,7 +176,7 @@ function Inicio() {
       </div>
 
       <footer className="mt-16 border-t border-border pt-6 text-xs leading-relaxed text-muted-foreground">
-        Herramienta educativa. Los casos son ficticios y generados automáticamente: no
+        Herramienta educativa. Los casos son ficticios y redactados en base a guías nacionales argentinas: no
         reemplazan el juicio clínico ni constituyen recomendación médica.
       </footer>
     </main>
