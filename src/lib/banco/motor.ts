@@ -4,9 +4,10 @@ import { BANCO_2 } from "./banco-2";
 import { BANCO_3 } from "./banco-3";
 import { BANCO_4 } from "./banco-4";
 import { BANCO_5 } from "./banco-5";
+import { BANCO_6 } from "./banco-6";
 import type { CasoBanco, Clave, Item } from "./tipos";
 
-export const BANCO: CasoBanco[] = [...BANCO_1, ...BANCO_2, ...BANCO_3, ...BANCO_4, ...BANCO_5];
+export const BANCO: CasoBanco[] = [...BANCO_1, ...BANCO_2, ...BANCO_3, ...BANCO_4, ...BANCO_5, ...BANCO_6];
 
 export function norm(t: string) {
   return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ");
