@@ -78,7 +78,7 @@ function Simulacion() {
     if (iniciado.current) return;
     iniciado.current = true;
     const previo = repetir ? obtenerRegistro(repetir) : undefined;
-    setBanco(buscarCaso(previo?.caso.bancoId) ?? elegirCaso(elegido, dificultad));
+    setBanco(buscarCaso(previo?.caso.bancoId) ?? elegirCaso(elegido, dificultad) ?? null);
   }, [repetir, elegido, dificultad]);
 
   const finalizar = () => {
