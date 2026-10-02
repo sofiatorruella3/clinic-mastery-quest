@@ -68,6 +68,9 @@ export const APARATOS: Aparato[] = [
     descripcion: "Control prenatal, metrorragia, dolor pelviano",
     icono: "baby",
   },
+  { id: "dermatologia", nombre: "Dermatología", descripcion: "Lesiones cutáneas", icono: "scan-face" },
+  { id: "otorrino", nombre: "Otorrinolaringología", descripcion: "Oído, nariz y garganta", icono: "ear" },
+  { id: "oftalmologia", nombre: "Oftalmología", descripcion: "Ojo y visión", icono: "eye" },
 ];
 
 export const DIFICULTADES: { id: Dificultad; nombre: string; detalle: string }[] = [

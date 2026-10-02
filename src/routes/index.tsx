@@ -6,6 +6,9 @@ import {
   Brain,
   Bug,
   Droplet,
+  Ear,
+  Eye,
+  ScanFace,
   Heart,
   Stethoscope,
   TestTube,
@@ -54,6 +57,9 @@ const ICONOS: Record<string, typeof Heart> = {
   bug: Bug,
   bone: Bone,
   baby: Baby,
+  ear: Ear,
+  eye: Eye,
+  "scan-face": ScanFace,
 };
 
 function Inicio() {
