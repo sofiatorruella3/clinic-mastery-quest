@@ -19,6 +19,8 @@ export type CasoBanco = {
   dxClaves: string;
   difs: Clave[];
   anam: Item[];
+  /** Charla libre no puntuada: preocupaciones, contexto social, emociones, preguntas del paciente. [tema, claves, respuesta] */
+  charla?: Item[];
   ex: Item[];
   est: Item[];
   trat: Clave[];
