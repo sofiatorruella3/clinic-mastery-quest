@@ -6,3 +6,5 @@
 - [x] Links de guías enviados registrados en src/lib/banco/referencias.ts
 - [x] Links de nefrología (SADEN/SAN portal + consenso renal diabético 2024) sumados a referencias.ts (AAMR y ALAT ya estaban)
 - [ ] Seguir sumando casos prefijados por área (basados en esos links)
+- [x] Más casos por área con anamnesis conversacional (paciente responde más allá de lo esperado)
+- [x] Examen físico y estudios: siempre mostrar valores concretos (normales o no) para practicar interpretación
