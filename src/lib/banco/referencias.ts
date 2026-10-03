@@ -11,4 +11,6 @@ export const REFERENCIAS_GUIAS: { sociedad: string; url: string }[] = [
   { sociedad: "SAGE – Guías AGA", url: "https://sage.org.ar/guias-y-consensos-aga/" },
   { sociedad: "SAGE – Guías ACG", url: "https://sage.org.ar/guias-y-consensos-acg/" },
   { sociedad: "AAMR – Guías y consensos", url: "https://www.aamr.org.ar/biblioteca/guias_recomendaciones_consensos_aamr.php" },
+  { sociedad: "SADEN – Sociedad Argentina de Nefrología", url: "https://www.san.org.ar/" },
+  { sociedad: "SADEN/SAD – Consenso Transdisciplinario de Enfermedad Renal Diabética 2024", url: "https://www.san.org.ar/wp-content/uploads/2024/05/Recomendaciones-SAD-SAN-FINAL.pdf" },
 ];
