@@ -4,4 +4,5 @@
 - [x] Casos y devolución basados solo en guías nacionales argentinas (sin guías internacionales)
 - [x] Áreas nuevas: dermatología, otorrinolaringología y oftalmología (3 casos c/u)
 - [x] Links de guías enviados registrados en src/lib/banco/referencias.ts
+- [x] Links de nefrología (SADEN/SAN portal + consenso renal diabético 2024) sumados a referencias.ts (AAMR y ALAT ya estaban)
 - [ ] Seguir sumando casos prefijados por área (basados en esos links)
