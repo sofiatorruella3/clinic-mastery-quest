@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 
 import { AnamnesisChat } from "@/components/AnamnesisChat";
+import { ObjetivosEntrevista } from "@/components/ObjetivosEntrevista";
 import { FeedbackPanel } from "@/components/FeedbackPanel";
 import { MessageResponse } from "@/components/ai-elements/message";
 import { Button } from "@/components/ui/button";
