@@ -7,6 +7,7 @@ import { BANCO_5 } from "./banco-5";
 import { BANCO_6 } from "./banco-6";
 import { BANCO_7 } from "./banco-7";
 import { BANCO_8 } from "./banco-8";
+import { evaluarEntrevista, evaluarHipotesis, RESPUESTAS_RMP } from "./objetivos-entrevista";
 import type { CasoBanco, Clave, Item } from "./tipos";
 
 export const BANCO: CasoBanco[] = [...BANCO_1, ...BANCO_2, ...BANCO_3, ...BANCO_4, ...BANCO_5, ...BANCO_6, ...BANCO_7, ...BANCO_8];
@@ -101,6 +102,8 @@ export function responderPaciente(b: CasoBanco, pregunta: string): { texto: stri
     const textos = [...hits.slice(0, 3).map((h) => h[2]), ...charla.slice(0, hits.length ? 1 : 2).map((c) => c[2])];
     return { texto: textos.join(" "), ids: hits.map((h) => h[0]) };
   }
+  const rmp = RESPUESTAS_RMP.find(([c]) => coincide(pregunta, c));
+  if (rmp) return { texto: rmp[1], ids: [] };
   const g = GENERICAS.find(([c]) => coincide(pregunta, c));
   if (g) return { texto: g[1], ids: [] };
   return { texto: NO_ENTIENDE[noEntiendeIdx++ % NO_ENTIENDE.length]!, ids: [] };
@@ -223,7 +226,7 @@ function evaluarClaves(nombre: string, claves: Clave[], texto: string): Feedback
 
 export function evaluar(
   b: CasoBanco,
-  r: { anamnesisIds: string[]; examenFisico: SolicitudEtapa[]; estudios: SolicitudEtapa[]; diagnostico: string; tratamiento: string; seguimiento: string },
+  r: { transcripcion?: string; hipotesis?: string; anamnesisIds: string[]; examenFisico: SolicitudEtapa[]; estudios: SolicitudEtapa[]; diagnostico: string; tratamiento: string; seguimiento: string },
 ): Feedback {
   const anam = evaluarItems("Anamnesis", itemsAnamnesis(b), "", r.anamnesisIds);
   const ex = evaluarItems("Examen físico", b.ex, r.examenFisico.map((s) => s.pedido).join(" . "));
@@ -246,8 +249,10 @@ export function evaluar(
   trat.aEvitar = b.evitar;
   const seg = evaluarClaves("Seguimiento", b.seg, r.seguimiento);
 
-  const etapas = [anam, ex, est, dx, trat, seg];
-  const pesos = [0.25, 0.2, 0.2, 0.2, 0.075, 0.075];
+  const rmp = evaluarEntrevista(r.transcripcion ?? "");
+  const hip = evaluarHipotesis(b, r.hipotesis ?? "");
+  const etapas = [rmp, anam, hip, ex, est, dx, trat, seg];
+  const pesos = [0.15, 0.2, 0.1, 0.15, 0.15, 0.15, 0.05, 0.05];
   const global = Math.round(etapas.reduce((s, e, i) => s + e.puntaje * (pesos[i] ?? 0), 0));
 
   const debil = [...etapas].sort((a, c) => a.puntaje - c.puntaje).slice(0, 2);

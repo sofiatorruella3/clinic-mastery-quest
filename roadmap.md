@@ -8,3 +8,4 @@
 - [ ] Seguir sumando casos prefijados por área (basados en esos links)
 - [x] Más casos por área con anamnesis conversacional (paciente responde más allá de lo esperado)
 - [x] Examen físico y estudios: siempre mostrar valores concretos (normales o no) para practicar interpretación
+- [x] Objetivos de entrevista RMP (Calgary-Cambridge, derechos y género, biopsicosocial, hipótesis, trato) con checklist y devolución

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 
 import { AnamnesisChat } from "@/components/AnamnesisChat";
+import { ObjetivosEntrevista } from "@/components/ObjetivosEntrevista";
 import { FeedbackPanel } from "@/components/FeedbackPanel";
 import { MessageResponse } from "@/components/ai-elements/message";
 import { Button } from "@/components/ui/button";
@@ -71,6 +72,7 @@ function Simulacion() {
   const [feedback, setFeedback] = useState<Feedback | null>(null);
 
   const [anamnesisIds, setAnamnesisIds] = useState<string[]>([]);
+  const [hipotesis, setHipotesis] = useState("");
   const [banco, setBanco] = useState<CasoBanco | null>(null);
 
   const iniciado = useRef(false);
@@ -83,7 +85,7 @@ function Simulacion() {
 
   const finalizar = () => {
     if (!banco || !caso) return;
-    const data = evaluar(banco, { anamnesisIds, examenFisico, estudios, diagnostico, tratamiento, seguimiento });
+    const data = evaluar(banco, { transcripcion: anamnesis, hipotesis, anamnesisIds, examenFisico, estudios, diagnostico, tratamiento, seguimiento });
     setFeedback(data);
     try {
       guardarRegistro({
@@ -170,9 +172,15 @@ function Simulacion() {
       {etapa === "anamnesis" && (
         <Seccion
           titulo="Anamnesis"
-          ayuda="Entrevistá al paciente como en el consultorio. Preguntá una cosa por vez: solo responde lo que le preguntes."
+          ayuda="Entrevistá al paciente como en el consultorio. Conducí la entrevista según el modelo Calgary-Cambridge, con perspectiva de derechos y género. Preguntá una cosa por vez."
         >
           <AnamnesisChat banco={banco} onTranscripcion={onTranscripcion} />
+          <ObjetivosEntrevista transcripcion={anamnesis} />
+          <div className="card-clinica mt-4 p-4">
+            <label htmlFor="hipotesis" className="mb-1 block text-sm font-medium">Hipótesis iniciales</label>
+            <p className="mb-2 text-xs text-muted-foreground">Al terminar la entrevista, escribí tus hipótesis diagnósticas y los criterios de urgencia que identificaste.</p>
+            <Textarea id="hipotesis" value={hipotesis} onChange={(e) => setHipotesis(e.target.value)} rows={3} placeholder="Ej.: 1) ... 2) ... ¿Criterios de urgencia?" />
+          </div>
           <Avanzar onClick={() => setEtapa("examen")} texto="Pasar al examen físico" />
         </Seccion>
       )}
