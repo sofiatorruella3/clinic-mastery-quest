@@ -7,7 +7,7 @@ import { BANCO_5 } from "./banco-5";
 import { BANCO_6 } from "./banco-6";
 import { BANCO_7 } from "./banco-7";
 import { BANCO_8 } from "./banco-8";
-import { evaluarEntrevista, evaluarHipotesis, RESPUESTAS_RMP } from "./objetivos-entrevista";
+import { RESPUESTAS_RMP } from "./objetivos-entrevista";
 import type { CasoBanco, Clave, Item } from "./tipos";
 
 export const BANCO: CasoBanco[] = [...BANCO_1, ...BANCO_2, ...BANCO_3, ...BANCO_4, ...BANCO_5, ...BANCO_6, ...BANCO_7, ...BANCO_8];
@@ -249,10 +249,8 @@ export function evaluar(
   trat.aEvitar = b.evitar;
   const seg = evaluarClaves("Seguimiento", b.seg, r.seguimiento);
 
-  const rmp = evaluarEntrevista(r.transcripcion ?? "");
-  const hip = evaluarHipotesis(b, r.hipotesis ?? "");
-  const etapas = [rmp, anam, hip, ex, est, dx, trat, seg];
-  const pesos = [0.15, 0.2, 0.1, 0.15, 0.15, 0.15, 0.05, 0.05];
+   const etapas = [anam, ex, est, dx, trat, seg];
+   const pesos = [0.25, 0.2, 0.2, 0.25, 0.05, 0.05];
   const global = Math.round(etapas.reduce((s, e, i) => s + e.puntaje * (pesos[i] ?? 0), 0));
 
   const debil = [...etapas].sort((a, c) => a.puntaje - c.puntaje).slice(0, 2);
