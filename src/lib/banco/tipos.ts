@@ -21,6 +21,8 @@ export type CasoBanco = {
   anam: Item[];
   /** Charla libre no puntuada: preocupaciones, contexto social, emociones, preguntas del paciente. [tema, claves, respuesta] */
   charla?: Item[];
+  /** Estilo de comunicación del paciente; si falta se asigna uno fijo por caso. */
+  personalidad?: "verboso" | "laconico" | "ansioso" | "despistado";
   ex: Item[];
   est: Item[];
   trat: Clave[];
