@@ -18,12 +18,47 @@ export function norm(t: string) {
   return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ");
 }
 
+function casiIgual(a: string, b: string) {
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0, j = 0, dif = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { i++; j++; continue; }
+    if (++dif > 1) return false;
+    if (a.length > b.length) i++;
+    else if (b.length > a.length) j++;
+    else { i++; j++; }
+  }
+  return dif + (a.length - i) + (b.length - j) <= 1;
+}
+
 export function coincide(texto: string, claves: string) {
-  const t = ` ${norm(texto)} `;
+  const n = norm(texto);
+  const t = ` ${n} `;
+  const palabras = n.split(" ").filter(Boolean);
+  // Une palabras partidas por error de tipeo ("tam iien" → "tamiien")
+  const unidas = palabras.slice(0, -1).map((p, i) => p + palabras[i + 1]);
+  const tokens = [...palabras, ...unidas];
   return claves.split("|").some((c) => {
     const k = norm(c).trim();
-    return k.length > 0 && t.includes(` ${k}`);
+    if (!k) return false;
+    if (t.includes(` ${k}`)) return true;
+    // Tolerancia a errores de tipeo en claves de una sola palabra
+    if (k.length >= 5 && !k.includes(" ")) {
+      return tokens.some((p) => p.length >= 4 && (casiIgual(p, k) || (p.length > k.length && casiIgual(p.slice(0, k.length), k))));
+    }
+    return false;
   });
+}
+
+const ACTIVIDADES = "actividades|actividad diaria|vida diaria|dia a dia|rutina|escalera|subir|cuadras|caminar|esfuerzo|tareas|limita|cansa|agita|hacer cosas|quehaceres";
+
+function respuestaActividades(b: CasoBanco) {
+  const ctx = norm(`${b.motivo} ${b.dx} ${b.anam.map((a) => a[2]).join(" ")}`);
+  if (/disnea|falta el aire|ahog|insuficiencia cardiaca|epoc|fatiga|cansancio|pecho|angina|anemia/.test(ctx))
+    return "En reposo estoy más o menos bien, pero si subo un piso por la escalera, camino unas cuadras o hago las cosas de la casa ya me tengo que parar, me falta el aire y me canso. Antes no me pasaba.";
+  if (/dolor|artritis|articul|lumbar|rodilla/.test(ctx))
+    return "Sí, me cuesta bastante hacer las cosas de todos los días: el dolor me limita, tardo más en todo y algunas cosas las dejé de hacer.";
+  return "En lo diario me arreglo bien, hago mis cosas como siempre; no noto que esto me limite mucho, salvo cuando me siento mal.";
 }
 
 export function elegirCaso(aparato: string, dificultad: string) {
