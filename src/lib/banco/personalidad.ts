@@ -67,7 +67,7 @@ const TRIVIALES: Record<Personalidad, string[]> = {
   ],
   despistado: [
     "Bah, no sé si fue así exactamente, capaz que me confundo.",
-    "Mi señora/mi hija se acuerda mejor de esas cosas.",
+    "En casa se acuerdan mejor que yo de esas cosas.",
     "Perdón, se me mezclan las fechas.",
   ],
 };
@@ -76,7 +76,7 @@ const APERTURAS: Record<Personalidad, string[]> = {
   verboso: ["Mire, le cuento...", "Ay, doctor/a, ¿por dónde empiezo?", "Bueno, es una historia larga...", ""],
   laconico: [""],
   ansioso: ["Ay, sí...", "Mire, estoy muy nervioso/a con esto...", ""],
-  despistado: ["Mmm, a ver...", "Uh, déjeme pensar...", "Eh... ", ""],
+  despistado: ["Mmm, a ver...", "Uh, déjeme pensar...", "Eh...", ""],
 };
 
 const VAGUEDAD: [RegExp, string][] = [
