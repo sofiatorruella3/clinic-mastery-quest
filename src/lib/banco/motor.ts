@@ -31,7 +31,7 @@ function casiIgual(a: string, b: string) {
   return dif + (a.length - i) + (b.length - j) <= 1;
 }
 
-export function coincide(texto: string, claves: string) {
+export function coincide(texto: string, claves: string, difuso = false) {
   const n = norm(texto);
   const t = ` ${n} `;
   const palabras = n.split(" ").filter(Boolean);
@@ -43,7 +43,7 @@ export function coincide(texto: string, claves: string) {
     if (!k) return false;
     if (t.includes(` ${k}`)) return true;
     // Tolerancia a errores de tipeo en claves de una sola palabra
-    if (k.length >= 5 && !k.includes(" ")) {
+    if (difuso && k.length >= 5 && !k.includes(" ")) {
       return tokens.some((p) => p.length >= 4 && (casiIgual(p, k) || (p.length > k.length && casiIgual(p.slice(0, k.length), k))));
     }
     return false;
@@ -133,18 +133,24 @@ const NO_ENTIENDE = [
 let noEntiendeIdx = 0;
 
 export function responderPaciente(b: CasoBanco, pregunta: string): { texto: string; ids: string[] } {
-  const hits = itemsAnamnesis(b).filter((i) => coincide(pregunta, i[1]));
-  const charla = (b.charla ?? []).filter((i) => coincide(pregunta, i[1]));
+  return intentar(b, pregunta, false) ?? intentar(b, pregunta, true) ?? { texto: NO_ENTIENDE[noEntiendeIdx++ % NO_ENTIENDE.length]!, ids: [] };
+}
+
+function intentar(b: CasoBanco, pregunta: string, d: boolean): { texto: string; ids: string[] } | null {
+  const q = norm(pregunta);
+  const hits = itemsAnamnesis(b).filter((i) => coincide(pregunta, i[1], d));
+  const charla = (b.charla ?? []).filter((i) => coincide(pregunta, i[1], d));
   if (hits.length || charla.length) {
     const textos = [...hits.slice(0, 3).map((h) => h[2]), ...charla.slice(0, hits.length ? 1 : 2).map((c) => c[2])];
     const abierta = hits.some((h) => h[0] === "Motivo de consulta");
-    return { texto: conPersonalidad(b, norm(pregunta), textos.join(" "), abierta), ids: hits.map((h) => h[0]) };
+    return { texto: conPersonalidad(b, q, textos.join(" "), abierta), ids: hits.map((h) => h[0]) };
   }
-  const rmp = RESPUESTAS_RMP.find(([c]) => coincide(pregunta, c));
+  if (coincide(pregunta, ACTIVIDADES, d)) return { texto: conPersonalidad(b, q, respuestaActividades(b), false), ids: [] };
+  const rmp = RESPUESTAS_RMP.find(([c]) => coincide(pregunta, c, d));
   if (rmp) return { texto: rmp[1], ids: [] };
-  const g = GENERICAS.find(([c]) => coincide(pregunta, c));
-  if (g) return { texto: conPersonalidad(b, norm(pregunta), g[1], false), ids: [] };
-  return { texto: NO_ENTIENDE[noEntiendeIdx++ % NO_ENTIENDE.length]!, ids: [] };
+  const g = GENERICAS.find(([c]) => coincide(pregunta, c, d));
+  if (g) return { texto: conPersonalidad(b, q, g[1], false), ids: [] };
+  return null;
 }
 
 /* ───── Examen y estudios ───── */
