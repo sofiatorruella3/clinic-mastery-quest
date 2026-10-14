@@ -71,6 +71,9 @@ function respuestaActividades(b: CasoBanco) {
  * Si el caso no menciona el síntoma, el paciente lo niega (como en un interrogatorio dirigido real).
  */
 const SINTOMAS_DIRIGIDOS: [string, string, string, string][] = [
+  ["de golpe|de a poco|brusco|repentino|comienzo|inicio|como arranco|como empezo|cuando empezo|hace cuanto|desde cuando", "subito|brusco|repentin|de golpe|agudo",
+    "Empezó de golpe, de un momento para el otro, sin aviso.",
+    "Fue de a poco, vino avanzando con los días."],
   ["fiebre|temperatura|febril|calentura", "fiebre|febril|febricula|38|39",
     "Sí, me tomé la temperatura y tenía fiebre, andaba por los 38 y pico. Me da como escalofríos.",
     "Fiebre no, no me la medí pero no me sentí caliente ni con escalofríos."],
