@@ -298,6 +298,8 @@ function intentar(b: CasoBanco, pregunta: string, d: boolean): { texto: string; 
     return { texto: conPersonalidad(b, q, textos.join(" "), abierta), ids: hits.map((h) => h[0]) };
   }
   if (coincide(pregunta, ACTIVIDADES, d)) return { texto: conPersonalidad(b, q, respuestaActividades(b), false), ids: [] };
+  const sintoma = respuestaSintomaDirigido(b, pregunta, d);
+  if (sintoma) return { texto: conPersonalidad(b, q, sintoma, false), ids: [] };
   const rmp = RESPUESTAS_RMP.find(([c]) => coincide(pregunta, c, d));
   if (rmp) return { texto: rmp[1], ids: [] };
   const g = GENERICAS.find(([c]) => coincide(pregunta, c, d));
