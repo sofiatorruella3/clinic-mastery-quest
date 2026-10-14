@@ -10,3 +10,4 @@
 - [x] Examen físico y estudios: siempre mostrar valores concretos (normales o no) para practicar interpretación
 - [x] Objetivos de entrevista RMP (Calgary-Cambridge, derechos y género, biopsicosocial, hipótesis, trato) con checklist y devolución
 - [x] Quitar objetivos de entrevista e hipótesis iniciales y volver al flujo de seis etapas.
+- [x] Refinar anamnesis: respuestas dirigidas por síntoma (dolor, fiebre, peso, orina, deposiciones, mareos, embarazo, viajes, piel, oído, vista, etc.) que se niegan o confirman según el caso; cobertura 34/34 preguntas frecuentes en 5 casos de distintas áreas
