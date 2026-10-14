@@ -279,16 +279,17 @@ const GENERICAS: [string, string][] = [
   ["hola|buen dia|buenas|soy el|soy la|mucho gusto", "Hola, doctor/a, buen día. Gracias por atenderme."],
 ];
 
-const NO_ENTIENDE = [
-  "Mmm, no sé bien qué decirle, doctor/a... ¿a qué se refiere?",
-  "Perdón, no le entendí bien. ¿Me lo puede preguntar de otra manera?",
-  "La verdad que de eso no le sabría decir... no me fijé.",
-  "Uy, no sé. ¿Eso tiene que ver con lo que me pasa?",
+/** Comodín final: el paciente siempre contesta algo, nunca dice que no entendió. */
+const RESPUESTAS_COMODIN = [
+  "Mmm, la verdad que de eso no noté nada raro, doctor/a. Lo que más me molesta es lo que le conté.",
+  "No, eso no. Por suerte lo mío viene por otro lado, como le decía.",
+  "Eso no lo tuve, no. Yo sigo igual con lo que le conté al principio.",
+  "No sabría decirle, pero no me parece que venga por ahí la cosa. ¿Quiere que le cuente de nuevo cómo empezó todo?",
 ];
-let noEntiendeIdx = 0;
+let comodinIdx = 0;
 
 export function responderPaciente(b: CasoBanco, pregunta: string): { texto: string; ids: string[] } {
-  return intentar(b, pregunta, false) ?? intentar(b, pregunta, true) ?? { texto: NO_ENTIENDE[noEntiendeIdx++ % NO_ENTIENDE.length]!, ids: [] };
+  return intentar(b, pregunta, false) ?? intentar(b, pregunta, true) ?? { texto: conPersonalidad(b, norm(pregunta), RESPUESTAS_COMODIN[comodinIdx++ % RESPUESTAS_COMODIN.length]!, false), ids: [] };
 }
 
 function intentar(b: CasoBanco, pregunta: string, d: boolean): { texto: string; ids: string[] } | null {
