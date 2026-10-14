@@ -268,6 +268,7 @@ const GENERICAS: [string, string][] = [
   ["antecedente|enfermedad|problema de salud", "No tengo otras enfermedades que yo sepa."],
   ["preocupa|miedo|asusta|que piensa que|que cree que", "Y... un poco de miedo tengo, la verdad. Uno lee cosas en internet y se asusta."],
   ["duerme|sueno|dormir", "Duermo más o menos, me despierto algunas veces a la noche."],
+  ["comio algo raro|comida en mal estado|intoxicacion|envenen|algo que le cayo mal", "No, comí lo de siempre en casa, nada raro ni en mal estado."],
   ["apetito|come|alimentacion|dieta|comida", "Como como siempre, nada raro. Capaz un poco desordenado."],
   ["vive con|con quien vive|casa|familia vive|hijos|pareja|casado", "Vivo con mi familia, me acompañan bastante."],
   ["actividad fisica|ejercicio|deporte|camina", "Ejercicio no hago mucho, la verdad. Camino lo que puedo."],
@@ -279,16 +280,17 @@ const GENERICAS: [string, string][] = [
   ["hola|buen dia|buenas|soy el|soy la|mucho gusto", "Hola, doctor/a, buen día. Gracias por atenderme."],
 ];
 
-const NO_ENTIENDE = [
-  "Mmm, no sé bien qué decirle, doctor/a... ¿a qué se refiere?",
-  "Perdón, no le entendí bien. ¿Me lo puede preguntar de otra manera?",
-  "La verdad que de eso no le sabría decir... no me fijé.",
-  "Uy, no sé. ¿Eso tiene que ver con lo que me pasa?",
+/** Comodín final: el paciente siempre contesta algo, nunca dice que no entendió. */
+const RESPUESTAS_COMODIN = [
+  "Mmm, la verdad que de eso no noté nada raro, doctor/a. Lo que más me molesta es lo que le conté.",
+  "No, eso no. Por suerte lo mío viene por otro lado, como le decía.",
+  "Eso no lo tuve, no. Yo sigo igual con lo que le conté al principio.",
+  "No sabría decirle, pero no me parece que venga por ahí la cosa. ¿Quiere que le cuente de nuevo cómo empezó todo?",
 ];
-let noEntiendeIdx = 0;
+let comodinIdx = 0;
 
 export function responderPaciente(b: CasoBanco, pregunta: string): { texto: string; ids: string[] } {
-  return intentar(b, pregunta, false) ?? intentar(b, pregunta, true) ?? { texto: NO_ENTIENDE[noEntiendeIdx++ % NO_ENTIENDE.length]!, ids: [] };
+  return intentar(b, pregunta, false) ?? intentar(b, pregunta, true) ?? { texto: conPersonalidad(b, norm(pregunta), RESPUESTAS_COMODIN[comodinIdx++ % RESPUESTAS_COMODIN.length]!, false), ids: [] };
 }
 
 function intentar(b: CasoBanco, pregunta: string, d: boolean): { texto: string; ids: string[] } | null {
