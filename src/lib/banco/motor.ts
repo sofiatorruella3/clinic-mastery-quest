@@ -52,13 +52,165 @@ export function coincide(texto: string, claves: string, difuso = false) {
 
 const ACTIVIDADES = "actividades|actividad diaria|vida diaria|dia a dia|rutina|escalera|subir|cuadras|caminar|esfuerzo|tareas|limita|cansa|agita|hacer cosas|quehaceres";
 
+function ctxCaso(b: CasoBanco) {
+  return norm(`${b.motivo} ${b.dx} ${b.anam.map((a) => a[2]).join(" ")} ${b.ex.map((a) => a[2]).join(" ")}`);
+}
+
 function respuestaActividades(b: CasoBanco) {
-  const ctx = norm(`${b.motivo} ${b.dx} ${b.anam.map((a) => a[2]).join(" ")}`);
+  const ctx = ctxCaso(b);
   if (/disnea|falta el aire|ahog|insuficiencia cardiaca|epoc|fatiga|cansancio|pecho|angina|anemia/.test(ctx))
     return "En reposo estoy más o menos bien, pero si subo un piso por la escalera, camino unas cuadras o hago las cosas de la casa ya me tengo que parar, me falta el aire y me canso. Antes no me pasaba.";
   if (/dolor|artritis|articul|lumbar|rodilla/.test(ctx))
     return "Sí, me cuesta bastante hacer las cosas de todos los días: el dolor me limita, tardo más en todo y algunas cosas las dejé de hacer.";
   return "En lo diario me arreglo bien, hago mis cosas como siempre; no noto que esto me limite mucho, salvo cuando me siento mal.";
+}
+
+/**
+ * Respuestas dirigidas por síntoma: [claves de la pregunta, claves del contexto del caso,
+ * respuesta si el caso lo menciona, respuesta si no].
+ * Si el caso no menciona el síntoma, el paciente lo niega (como en un interrogatorio dirigido real).
+ */
+const SINTOMAS_DIRIGIDOS: [string, string, string, string][] = [
+  ["fiebre|temperatura|febril|calentura", "fiebre|febril|febricula|38|39",
+    "Sí, me tomé la temperatura y tenía fiebre, andaba por los 38 y pico. Me da como escalofríos.",
+    "Fiebre no, no me la medí pero no me sentí caliente ni con escalofríos."],
+  ["perdio peso|bajo de peso|adelgazo|adelgace|perdida de peso", "peso|adelgaz|bajo de peso|perdio",
+    "Sí, la verdad que bajé de peso sin querer, la ropa me queda más grande.",
+    "No, el peso se mantiene igual que siempre."],
+  ["dolor|le duele|te duele|duele", "dolor",
+    "Sí, me duele. Es el motivo por el que vine, más que nada.",
+    "Dolor no tengo, por suerte."],
+  ["donde le duele|donde te duele|localizacion|en que parte|en que zona", "dolor",
+    "Acá, mire, justo donde me señalo. Es siempre en el mismo lugar.",
+    "No me duele en ningún lado en particular."],
+  ["como es el dolor|tipo de dolor|que tipo|punzante|opresivo|quemante|sordo|colico", "dolor",
+    "Es un dolor que va y viene, a veces más fuerte. Cuando aprieta de verdad no me deja hacer nada.",
+    "No tengo dolor."],
+  ["se irradia|irradia|se va para|se corre el dolor|baja el dolor|sube el dolor", "irradia|dolor",
+    "A veces siento que se me corre un poco para los costados, pero más que nada me queda acá.",
+    "No, no se me mueve de donde es."],
+  ["que lo empeora|que lo agrava|empeora con|peor con|aumenta con", "dolor|disnea|ahog",
+    "Empeora cuando me muevo o hago esfuerzo; en reposo se calma un poco.",
+    "No noto que nada en particular lo empeore."],
+  ["que lo calma|que lo alivia|mejora con|alivia con|se pasa con", "dolor|disnea|ahog",
+    "Descansando se me calma bastante. Y cuando me siento quieto/a estoy mejor.",
+    "No encontré nada que lo alivie, viene y se va solo."],
+  ["deposiciones|materia fecal|caca|hacer caca|evacu|diarrea|estrenim|intestin", "diarrea|melena|materia fecal|deposiciones|estrenim",
+    "Ando medio mal de la panza con eso, noté cambios en las deposiciones estos días.",
+    "Las deposiciones como siempre, una vez al día más o menos, normales."],
+  ["orina|hacer pis|pis|miccion|cuanto orina", "orina|disuria|polaquiuria|hematuria|pis",
+    "Con el pis ando medio raro, noté cambios: me molesta un poco.",
+    "Orino normal, cuatro o cinco veces por día, color normal."],
+  ["mareo|mareos|mareado|vertigo|se le mueve todo", "mareo|vertigo",
+    "Sí, ando mareado/a, como que se me mueve todo a veces.",
+    "Mareos no, por suerte."],
+  ["se desmayo|desmayo|sincope|perdio el conocimiento|se bajo la presion|se puso blanco", "sincope|desmayo|lipotimia",
+    "Sí, me desmayé / casi me desmayo, se me puso todo negro un momento.",
+    "No, nunca me desmayé."],
+  ["palpitaciones|corazon acelerado|latidos|taquicardia|le late fuerte", "palpitaciones|taquicardia|arritmia|fibrilacion",
+    "Sí, siento el corazón que se me acelera de golpe, como si se me saliera del pecho.",
+    "No, el corazón lo siento normal."],
+  ["algo parecido antes|le paso antes|episodios previos|otra vez|primera vez que", "episodios|anteriores|recurrenc|previo",
+    "Sí, me pasó algo parecido otra vez, aunque no tan fuerte.",
+    "No, es la primera vez que me pasa algo así."],
+  ["fue al medico|consulto|lo vio alguien|otro medico|guardia", "",
+    "No, no fui a ningún médico por esto, vine directamente acá.",
+    "No, no fui a ningún médico por esto, vine directamente acá."],
+  ["estuvo internado|internacion|hospitaliz", "internad|hospitaliz",
+    "Sí, estuve internado/a una vez por un tema parecido.",
+    "No, nunca estuve internado/a."],
+  ["viajo|viaje|viajar|exterior|avion", "viaje|viajo|avion",
+    "Sí, hace poco hice un viaje largo, varias horas.",
+    "No, no viajé últimamente."],
+  ["contacto con enfermos|alguien enfermo|contagio|familiar enfermo|convive con", "contacto|contagio|convive",
+    "Sí, en casa hubo alguien con algo parecido estos días.",
+    "Que yo sepa, nadie cerca estuvo enfermo."],
+  ["embarazada|embarazo|embarazada", "embarazo|gestante|embarazada",
+    "Sí, estoy embarazada.",
+    "No, no estoy embarazada."],
+  ["menstruacion|la regla|periodo|le vino|ciclo menstrual", "menstru|regla|menorrea|amenorrea",
+    "Con la regla ando medio irregular, justo estos días noté cambios.",
+    "La regla me viene normal, todos los meses."],
+  ["toma anticonceptivos|anticonceptiv|pastillas anticonceptivas", "anticonceptiv",
+    "Sí, tomo las pastillas anticonceptivas.",
+    "No, no tomo anticonceptivos."],
+  ["le pica|picazon|comezon|se rasca", "prurito|picazon|dermat|urticaria|lesion",
+    "Sí, me pica bastante, me tengo que aguantar para no rascarme.",
+    "No, no me pica."],
+  ["sarpullido|ronchas|lesiones en la piel|manchas en la piel|granos", "sarpullido|ronchas|lesion|erupcion|exantema|placa|mancha",
+    "Sí, me salieron unas lesiones / manchas en la piel, mire.",
+    "No, la piel la tengo bien."],
+  ["zumba el oido|zumbido|acufeno|oido tapado|escucha bien|audicion|sordera", "zumbido|acufeno|hipoacusia|oido|sordera|audicion",
+    "Sí, siento el oído medio tapado y me zumba a veces.",
+    "Escucho bien, sin problemas de oídos."],
+  ["ve borroso|vision|ve bien|vista|ojos|vision doble", "visual|vision|ocular|oftalm|ojo|borroso",
+    "Sí, noto que no veo tan bien como antes, medio borroso.",
+    "La vista la tengo bien."],
+  ["nariz tapada|respirar por la nariz|congestion nasal|mocos|resfrio", "nasal|rinorrea|congestion|resfrio|rinitis",
+    "Sí, tengo la nariz tapada y me moquea.",
+    "No, respiro bien por la nariz."],
+  ["le sangra|sangrado|sangra|sangre", "sangr|hemorrag|epistaxis|hemoptisis|hematemesis|melena",
+    "Sí, noté sangre, eso fue lo que más me asustó.",
+    "No, no tuve ningún sangrado."],
+  ["tos|tose", "tos",
+    "Sí, tengo tos, me agarra en ataques a veces.",
+    "No, no tengo tos."],
+  ["escupe sangre|tose sangre|flema con sangre|esputo", "hemoptisis|sangre al toser",
+    "Sí, un par de veces vi sangre al toser, poquito.",
+    "No, nunca escupí sangre."],
+  ["flema|esputo|expectora|catarro", "esputo|flema|expectora",
+    "Sí, levanto flemas, sobre todo a la mañana.",
+    "No, tos seca, sin flemas."],
+  ["cuesta tragar|disfagia|tragar|dolor al tragar|comida se le atora", "disfagia|odinofagia|tragar",
+    "Sí, me cuesta tragar, como que se me queda la comida a mitad de camino.",
+    "No, trago sin problema."],
+  ["nauseas|vomitos|vomito|devolvio|asqueado", "nauseas|vomito",
+    "Sí, anduve con náuseas y vomité un par de veces.",
+    "No, sin náuseas ni vómitos."],
+  ["acidez|ardor de estomago|pirosis|reflujo", "pirosis|acidez|reflujo",
+    "Sí, me arde la boca del estómago, sobre todo después de comer.",
+    "No, no tengo acidez."],
+  ["cabeza|cefalea|dolor de cabeza", "cefalea|dolor de cabeza|migra",
+    "Sí, me duele la cabeza, a veces fuerte.",
+    "No, la cabeza no me duele."],
+  ["escalofrios|tiembla de frio", "escalofrios|fiebre|febril",
+    "Sí, me dieron escalofríos de esos que te sacuden todo.",
+    "No, sin escalofríos."],
+  ["ganglios|bolitas|bultos|adeno", "ganglio|adenopat|linfaden|bulto",
+    "Sí, me toqué unas bolitas que no estaban antes.",
+    "No, no me noté ninguna bolita."],
+  ["caida del pelo|cae el pelo|cabello", "alopecia|pelo|cabello",
+    "Sí, se me cae el pelo más de lo normal.",
+    "No, el pelo normal."],
+  ["sed|mucha sed|boca seca", "polidipsia|sed",
+    "Sí, ando con una sed bárbara, tomo agua todo el día.",
+    "No, tomo lo normal."],
+  ["hambre|apetito|gana de comer", "polifagia|apetito|anorexia",
+    "El apetito anduvo raro, noté cambios con las ganas de comer.",
+    "El apetito normal, como siempre."],
+  ["hormigueo|entumec|duerme la mano|duerme el pie|perdida de fuerza|debilidad|no puede mover", "parestesia|hormigueo|debilidad|paresia|fuerza|deficit",
+    "Sí, noto como hormigueos y que me falta fuerza de un lado.",
+    "No, ni hormigueos ni falta de fuerza."],
+  ["convulsion|sacudidas|epilep|ataque", "convulsion|epilep|crisis",
+    "Sí, tuve como un ataque, me sacudí toda.",
+    "No, nunca tuve convulsiones."],
+  ["edema|hinchazon|hinchado|se le hincha", "edema|hinchazon|hinchad",
+    "Sí, se me hinchan, sobre todo a la tarde-noche.",
+    "No, no noto hinchazón."],
+  ["ortopnea|almohadas|dormir sentado|se ahoga acostado|ahoga de noche|despierta ahogado", "ortopnea|paroxistica|ahog",
+    "Sí, de noche tengo que poner más almohadas porque acostado/a me ahogo.",
+    "No, duermo acostado/a sin problema."],
+];
+
+function respuestaSintomaDirigido(b: CasoBanco, pregunta: string, difuso: boolean): string | null {
+  const ctx = ctxCaso(b);
+  for (const [clavesPregunta, clavesCaso, si, no] of SINTOMAS_DIRIGIDOS) {
+    if (!coincide(pregunta, clavesPregunta, difuso)) continue;
+    if (b.paciente.sexo === "masculino" && /embaraz|menstru|regla|anticonceptiv/.test(norm(clavesPregunta)))
+      return "No, eso no aplica en mi caso.";
+    return clavesCaso && coincide(ctx, clavesCaso) ? si : no;
+  }
+  return null;
 }
 
 export function elegirCaso(aparato: string, dificultad: string) {
