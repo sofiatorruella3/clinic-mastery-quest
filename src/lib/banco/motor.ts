@@ -268,6 +268,7 @@ const GENERICAS: [string, string][] = [
   ["antecedente|enfermedad|problema de salud", "No tengo otras enfermedades que yo sepa."],
   ["preocupa|miedo|asusta|que piensa que|que cree que", "Y... un poco de miedo tengo, la verdad. Uno lee cosas en internet y se asusta."],
   ["duerme|sueno|dormir", "Duermo más o menos, me despierto algunas veces a la noche."],
+  ["comio algo raro|comida en mal estado|intoxicacion|envenen|algo que le cayo mal", "No, comí lo de siempre en casa, nada raro ni en mal estado."],
   ["apetito|come|alimentacion|dieta|comida", "Como como siempre, nada raro. Capaz un poco desordenado."],
   ["vive con|con quien vive|casa|familia vive|hijos|pareja|casado", "Vivo con mi familia, me acompañan bastante."],
   ["actividad fisica|ejercicio|deporte|camina", "Ejercicio no hago mucho, la verdad. Camino lo que puedo."],
