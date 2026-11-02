@@ -5,7 +5,6 @@ import { z } from "zod";
 
 import { AnamnesisChat } from "@/components/AnamnesisChat";
 import { FeedbackPanel } from "@/components/FeedbackPanel";
-import { MessageResponse } from "@/components/ai-elements/message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { aCaso, buscarCaso, elegirCaso, evaluar, responderSolicitud } from "@/lib/banco/motor";
@@ -338,8 +337,8 @@ function EtapaSolicitudes({
           <div className="border-b border-border bg-secondary/40 px-4 py-2.5 text-sm font-medium">
             {s.pedido}
           </div>
-          <div className="px-4 py-3 text-sm leading-relaxed">
-            <MessageResponse>{s.hallazgo}</MessageResponse>
+          <div className="whitespace-pre-line px-4 py-3 text-sm leading-relaxed">
+            {s.hallazgo.replace(/\*\*/g, "")}
           </div>
         </div>
       ))}
