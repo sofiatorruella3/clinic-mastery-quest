@@ -8,11 +8,12 @@ import { BANCO_6 } from "./banco-6";
 import { BANCO_7 } from "./banco-7";
 import { BANCO_8 } from "./banco-8";
 import { BANCO_9 } from "./banco-9";
+import { BANCO_10 } from "./banco-10";
 import { conPersonalidad } from "./personalidad";
 import { RESPUESTAS_RMP } from "./objetivos-entrevista";
 import type { CasoBanco, Clave, Item } from "./tipos";
 
-export const BANCO: CasoBanco[] = [...BANCO_1, ...BANCO_2, ...BANCO_3, ...BANCO_4, ...BANCO_5, ...BANCO_6, ...BANCO_7, ...BANCO_8, ...BANCO_9];
+export const BANCO: CasoBanco[] = [...BANCO_1, ...BANCO_2, ...BANCO_3, ...BANCO_4, ...BANCO_5, ...BANCO_6, ...BANCO_7, ...BANCO_8, ...BANCO_9, ...BANCO_10];
 
 export function norm(t: string) {
   return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ");
