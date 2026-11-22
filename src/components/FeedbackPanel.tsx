@@ -1,7 +1,29 @@
-import { AlertTriangle, Ban, CheckCircle2, CircleSlash, XCircle } from "lucide-react";
+import { AlertTriangle, Ban, CheckCircle2, CircleSlash, ExternalLink, XCircle } from "lucide-react";
 
+import { REFERENCIAS_GUIAS } from "@/lib/banco/referencias";
 import type { Feedback } from "@/lib/simulacion-tipos";
 import { cn } from "@/lib/utils";
+
+const SIGLAS_GUIAS: [RegExp, string][] = [
+  [/\bFASGO\b/i, "FASGO"],
+  [/\bSOGIBA\b/i, "SOGIBA"],
+  [/\bSAC\b|Sociedad Argentina de Cardiolog/i, "SAC"],
+  [/\bSADI\b|Sociedad Argentina de Infectolog/i, "SADI"],
+  [/\bSAR\b|Sociedad Argentina de Reumatolog/i, "SAR"],
+  [/\bALAT\b/i, "ALAT"],
+  [/\bSAGE\b|Sociedad Argentina de Gastroenterolog/i, "SAGE"],
+  [/\bAAMR\b|Asociaci[oó]n Argentina de Medicina Respiratoria/i, "AAMR"],
+  [/\b(SAN|SADEN)\b|Sociedad Argentina de Nefrolog/i, "SADEN"],
+];
+
+function urlGuia(texto: string): string | undefined {
+  for (const [re, sigla] of SIGLAS_GUIAS) {
+    if (re.test(texto)) {
+      return REFERENCIAS_GUIAS.find((r) => r.sociedad.toUpperCase().startsWith(sigla))?.url;
+    }
+  }
+  return undefined;
+}
 
 function Lista({
   titulo,
@@ -109,11 +131,24 @@ export function FeedbackPanel({ feedback }: { feedback: Feedback }) {
             Guías utilizadas
           </h3>
           <ul className="space-y-2 pl-5 text-sm leading-relaxed text-muted-foreground">
-            {feedback.guiasUtilizadas.map((g, i) => (
-              <li key={i} className="list-disc">
-                {g}
-              </li>
-            ))}
+            {feedback.guiasUtilizadas.map((g, i) => {
+              const url = urlGuia(g);
+              return (
+                <li key={i} className="list-disc">
+                  {g}
+                  {url && (
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-1.5 inline-flex items-center gap-0.5 text-primary underline underline-offset-2 hover:opacity-80"
+                    >
+                      Ver fuente <ExternalLink className="size-3" />
+                    </a>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>

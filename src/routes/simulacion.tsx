@@ -7,9 +7,9 @@ import { AnamnesisChat } from "@/components/AnamnesisChat";
 import { FeedbackPanel } from "@/components/FeedbackPanel";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { aCaso, buscarCaso, elegirCaso, evaluar, responderSolicitud } from "@/lib/banco/motor";
+import { aCaso, buscarCaso, cargarBanco, elegirCaso, evaluar, responderSolicitud } from "@/lib/banco/motor";
 import type { CasoBanco } from "@/lib/banco/tipos";
-import { guardarRegistro, obtenerRegistro } from "@/lib/historial";
+import { guardarRegistro, leerHistorial, obtenerRegistro } from "@/lib/historial";
 import {
   APARATOS,
   DIFICULTADES,
@@ -76,8 +76,23 @@ function Simulacion() {
   useEffect(() => {
     if (iniciado.current) return;
     iniciado.current = true;
-    const previo = repetir ? obtenerRegistro(repetir) : undefined;
-    setBanco(buscarCaso(previo?.caso.bancoId) ?? elegirCaso(elegido, dificultad) ?? null);
+    let cancelado = false;
+    void cargarBanco().then((lista) => {
+      if (cancelado) return;
+      const previo = repetir ? obtenerRegistro(repetir) : undefined;
+      const recientes = leerHistorial()
+        .slice(0, 3)
+        .map((r) => r.caso.bancoId)
+        .filter((id): id is string => Boolean(id));
+      setBanco(
+        buscarCaso(lista, previo?.caso.bancoId) ??
+          elegirCaso(lista, elegido, dificultad, recientes) ??
+          null,
+      );
+    });
+    return () => {
+      cancelado = true;
+    };
   }, [repetir, elegido, dificultad]);
 
   const finalizar = () => {

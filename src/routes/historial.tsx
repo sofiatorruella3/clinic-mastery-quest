@@ -1,10 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ChevronDown, RotateCcw, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowLeft, ChevronDown, Download, RotateCcw, Trash2, Upload } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { FeedbackPanel } from "@/components/FeedbackPanel";
 import { Button } from "@/components/ui/button";
-import { borrarRegistro, leerHistorial, type RegistroCaso } from "@/lib/historial";
+import {
+  borrarRegistro,
+  exportarHistorialJson,
+  importarHistorialJson,
+  leerHistorial,
+  limpiarHistorial,
+  type RegistroCaso,
+} from "@/lib/historial";
 import { DIFICULTADES } from "@/lib/simulacion-tipos";
 
 export const Route = createFileRoute("/historial")({
@@ -30,9 +37,49 @@ export const Route = createFileRoute("/historial")({
 function Historial() {
   const [lista, setLista] = useState<RegistroCaso[]>([]);
   const [abierto, setAbierto] = useState<string | null>(null);
+  const [aviso, setAviso] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => setLista(leerHistorial()), []);
+
+  const exportar = () => {
+    const blob = new Blob([exportarHistorialJson()], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `simulador-clinico-historial-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    try {
+      const texto = await file.text();
+      const { agregados } = importarHistorialJson(texto);
+      setLista(leerHistorial());
+      setAviso(
+        agregados > 0
+          ? `Se importaron ${agregados} caso(s) al historial.`
+          : "Todos los casos del archivo ya estaban en tu historial.",
+      );
+    } catch {
+      setAviso("No se pudo importar el archivo: verificá que sea un JSON exportado por el simulador.");
+    }
+  };
+
+  const borrarTodo = () => {
+    if (!window.confirm("¿Seguro que querés borrar todos los casos guardados en este dispositivo?")) {
+      return;
+    }
+    limpiarHistorial();
+    setLista([]);
+    setAbierto(null);
+    setAviso("Se borró el historial.");
+  };
 
   return (
     <main className="mx-auto max-w-5xl px-5 py-8 md:py-12">
@@ -42,11 +89,43 @@ function Historial() {
       >
         <ArrowLeft className="size-4" /> Inicio
       </Link>
-      <h1 className="text-4xl md:text-5xl">Mis casos anteriores</h1>
-      <p className="mt-2 mb-8 text-sm text-muted-foreground">
-        Se guardan en este dispositivo. Podés revisar la devolución y repetir el mismo paciente
-        desde cero.
-      </p>
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-4xl md:text-5xl">Mis casos anteriores</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Se guardan en este dispositivo. Podés revisar la devolución, repetir el mismo paciente o
+            exportar tu historial.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <input
+            ref={inputRef}
+            type="file"
+            accept="application/json,.json"
+            className="hidden"
+            onChange={importar}
+          />
+          <Button size="sm" variant="outline" onClick={() => inputRef.current?.click()}>
+            <Upload className="size-4" /> Importar
+          </Button>
+          {lista.length > 0 && (
+            <>
+              <Button size="sm" variant="outline" onClick={exportar}>
+                <Download className="size-4" /> Exportar
+              </Button>
+              <Button size="sm" variant="ghost" onClick={borrarTodo}>
+                <Trash2 className="size-4" /> Borrar todo
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {aviso && (
+        <div className="mb-6 rounded-lg border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
+          {aviso}
+        </div>
+      )}
 
       {lista.length === 0 && (
         <div className="card-clinica p-8 text-center text-sm text-muted-foreground">

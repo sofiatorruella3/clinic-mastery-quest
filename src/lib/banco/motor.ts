@@ -1,21 +1,17 @@
 import type { Caso, Feedback, FeedbackEtapa, SolicitudEtapa } from "@/lib/simulacion-tipos";
-import { BANCO_1 } from "./banco-1";
-import { BANCO_2 } from "./banco-2";
-import { BANCO_3 } from "./banco-3";
-import { BANCO_4 } from "./banco-4";
-import { BANCO_5 } from "./banco-5";
-import { BANCO_6 } from "./banco-6";
-import { BANCO_7 } from "./banco-7";
-import { BANCO_8 } from "./banco-8";
-import { BANCO_9 } from "./banco-9";
-import { BANCO_10 } from "./banco-10";
-import { BANCO_11 } from "./banco-11";
-import { BANCO_12 } from "./banco-12";
 import { conPersonalidad } from "./personalidad";
 import { RESPUESTAS_RMP } from "./objetivos-entrevista";
 import type { CasoBanco, Clave, Item } from "./tipos";
 
-export const BANCO: CasoBanco[] = [...BANCO_1, ...BANCO_2, ...BANCO_3, ...BANCO_4, ...BANCO_5, ...BANCO_6, ...BANCO_7, ...BANCO_8, ...BANCO_9, ...BANCO_10, ...BANCO_11, ...BANCO_12];
+let bancoCache: Promise<CasoBanco[]> | null = null;
+
+/** Carga el banco de casos en un chunk separado para mantener liviana la página de inicio. */
+export function cargarBanco(): Promise<CasoBanco[]> {
+  if (!bancoCache) {
+    bancoCache = import("./datos").then((m) => m.BANCO);
+  }
+  return bancoCache;
+}
 
 export function norm(t: string) {
   return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ");
@@ -263,13 +259,21 @@ function respuestaSintomaDirigido(b: CasoBanco, pregunta: string, difuso: boolea
   return null;
 }
 
-export function elegirCaso(aparato: string, dificultad: string) {
-  const opciones = BANCO.filter((c) => c.aparato === aparato && c.dificultad === dificultad);
-  const lista = opciones.length ? opciones : BANCO.filter((c) => c.aparato === aparato);
-  return lista[Math.floor(Math.random() * lista.length)] ?? BANCO[0];
+export function elegirCaso(
+  banco: CasoBanco[],
+  aparato: string,
+  dificultad: string,
+  excluirIds: string[] = [],
+) {
+  const opciones = banco.filter((c) => c.aparato === aparato && c.dificultad === dificultad);
+  const base = opciones.length ? opciones : banco.filter((c) => c.aparato === aparato);
+  const excluidos = new Set(excluirIds);
+  const sinRepetir = base.filter((c) => !excluidos.has(c.id));
+  const lista = sinRepetir.length ? sinRepetir : base;
+  return lista[Math.floor(Math.random() * lista.length)] ?? banco[0];
 }
 
-export const buscarCaso = (id?: string) => BANCO.find((c) => c.id === id);
+export const buscarCaso = (banco: CasoBanco[], id?: string) => banco.find((c) => c.id === id);
 
 export function aCaso(b: CasoBanco): Caso {
   return {

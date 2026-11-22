@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { afirma, BANCO, buscarCaso, coincide, elegirCaso, evaluar, responderPaciente } from "./motor";
+import { BANCO } from "./datos";
+import { afirma, buscarCaso, coincide, elegirCaso, evaluar, responderPaciente } from "./motor";
+import { casoBancoSchema } from "./schema";
 
 const entradaVacia = {
   anamnesisIds: [] as string[],
@@ -41,7 +43,7 @@ describe("afirma (detección de negaciones)", () => {
 });
 
 describe("evaluar", () => {
-  const caso = buscarCaso("cv-baja")!;
+  const caso = buscarCaso(BANCO, "cv-baja")!;
 
   it("el caso de ejemplo existe", () => {
     expect(caso).toBeDefined();
@@ -60,7 +62,7 @@ describe("evaluar", () => {
   });
 
   it("penaliza conductas peligrosas definidas en el caso", () => {
-    const disec = buscarCaso("cv-dificil")!;
+    const disec = buscarCaso(BANCO, "cv-dificil")!;
     expect(disec.peligros?.length).toBeGreaterThan(0);
     const limpio = evaluar(disec, { ...entradaVacia, tratamiento: "control del dolor y betabloqueo, cirugía cardiovascular" });
     const peligroso = evaluar(disec, { ...entradaVacia, tratamiento: "control del dolor, heparina y aspirina" });
@@ -71,7 +73,7 @@ describe("evaluar", () => {
   });
 
   it("no penaliza una conducta peligrosa si el alumno la descarta", () => {
-    const disec = buscarCaso("cv-dificil")!;
+    const disec = buscarCaso(BANCO, "cv-dificil")!;
     const f = evaluar(disec, { ...entradaVacia, tratamiento: "no indicar heparina ni aspirina hasta descartar disección" });
     expect(f.etapas.find((e) => e.etapa === "Tratamiento")!.errores).toHaveLength(0);
   });
@@ -91,47 +93,22 @@ describe("evaluar", () => {
   });
 });
 
-describe("integridad del banco de casos", () => {
+describe("integridad y esquema Zod del banco de casos", () => {
   it("hay casos y los ids son únicos", () => {
     expect(BANCO.length).toBeGreaterThan(0);
     const ids = BANCO.map((b) => b.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it("todos los casos tienen los campos obligatorios", () => {
+  it("todos los casos cumplen el esquema Zod", () => {
+    const errores: string[] = [];
     for (const b of BANCO) {
-      const ctx = `caso ${b.id}`;
-      expect(b.titulo, ctx).toBeTruthy();
-      expect(b.motivo, ctx).toBeTruthy();
-      expect(b.dx, ctx).toBeTruthy();
-      expect(b.dxClaves, ctx).toBeTruthy();
-      expect(b.anam.length, ctx).toBeGreaterThan(0);
-      expect(b.ex.length, ctx).toBeGreaterThan(0);
-      expect(b.est.length, ctx).toBeGreaterThan(0);
-      expect(b.trat.length, ctx).toBeGreaterThan(0);
-      expect(b.seg.length, ctx).toBeGreaterThan(0);
-      expect(b.guias.length, ctx).toBeGreaterThan(0);
-      expect(["baja", "moderada", "dificil"], ctx).toContain(b.dificultad);
-    }
-  });
-
-  it("los items de anamnesis, examen y estudios tienen nombre, claves y texto", () => {
-    for (const b of BANCO) {
-      for (const it of [...b.anam, ...b.ex, ...b.est]) {
-        expect(it[0], `caso ${b.id}`).toBeTruthy();
-        expect(it[1], `caso ${b.id} / ${it[0]}`).toBeTruthy();
-        expect(it[2], `caso ${b.id} / ${it[0]}`).toBeTruthy();
+      const res = casoBancoSchema.safeParse(b);
+      if (!res.success) {
+        errores.push(`${b.id}: ${res.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")}`);
       }
     }
-  });
-
-  it("los peligros tienen descripción y claves", () => {
-    for (const b of BANCO) {
-      for (const p of b.peligros ?? []) {
-        expect(p[0], `caso ${b.id}`).toBeTruthy();
-        expect(p[1], `caso ${b.id}`).toBeTruthy();
-      }
-    }
+    expect(errores).toEqual([]);
   });
 
   it("el diagnóstico escrito en el caso coincide con sus propias claves", () => {
@@ -144,10 +121,16 @@ describe("integridad del banco de casos", () => {
     expect(aparatos.size).toBeGreaterThanOrEqual(13);
   });
 
-  it("elegirCaso respeta aparato y dificultad cuando existen", () => {
-    const c = elegirCaso("cardiovascular", "baja");
-    expect(c?.aparato).toBe("cardiovascular");
-    expect(c?.dificultad).toBe("baja");
+  it("elegirCaso respeta aparato y dificultad y evita repetir recientes cuando hay alternativas", () => {
+    const todos = BANCO.filter((b) => b.aparato === "cardiovascular" && b.dificultad === "baja");
+    expect(todos.length).toBeGreaterThan(1);
+    const excluir = [todos[0]!.id];
+    for (let i = 0; i < 10; i++) {
+      const c = elegirCaso(BANCO, "cardiovascular", "baja", excluir);
+      expect(c?.aparato).toBe("cardiovascular");
+      expect(c?.dificultad).toBe("baja");
+      expect(c?.id).not.toBe(todos[0]!.id);
+    }
   });
 
   it("el paciente siempre responde algo", () => {
