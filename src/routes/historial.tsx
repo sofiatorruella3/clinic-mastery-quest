@@ -1,9 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ChevronDown, Download, RotateCcw, Trash2, Upload } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { ArrowLeft, BarChart3, ChevronDown, Download, RotateCcw, Trash2, Upload } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { FeedbackPanel } from "@/components/FeedbackPanel";
 import { Button } from "@/components/ui/button";
+import { calcularEstadisticas } from "@/lib/estadisticas";
 import {
   borrarRegistro,
   exportarHistorialJson,
@@ -40,6 +41,7 @@ function Historial() {
   const [aviso, setAviso] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const stats = useMemo(() => calcularEstadisticas(lista), [lista]);
 
   useEffect(() => setLista(leerHistorial()), []);
 
@@ -122,9 +124,90 @@ function Historial() {
       </div>
 
       {aviso && (
-        <div className="mb-6 rounded-lg border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
+        <div
+          role="status"
+          className="mb-6 rounded-lg border border-border bg-card px-4 py-3 text-sm text-muted-foreground"
+        >
           {aviso}
         </div>
+      )}
+
+      {stats.total > 0 && (
+        <section aria-label="Estadísticas de progreso" className="card-clinica mb-8 p-6">
+          <div className="mb-4 flex items-center gap-2 text-sm font-medium">
+            <BarChart3 className="size-4 text-primary" /> Tu progreso
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="rounded-lg border border-border bg-secondary/30 p-3">
+              <p className="text-xs text-muted-foreground">Intentos</p>
+              <p className="font-display text-2xl">{stats.total}</p>
+            </div>
+            <div className="rounded-lg border border-border bg-secondary/30 p-3">
+              <p className="text-xs text-muted-foreground">Casos distintos</p>
+              <p className="font-display text-2xl">{stats.casosUnicos}</p>
+            </div>
+            <div className="rounded-lg border border-border bg-secondary/30 p-3">
+              <p className="text-xs text-muted-foreground">Promedio global</p>
+              <p className="font-display text-2xl">{stats.promedioGlobal}/100</p>
+            </div>
+            <div className="rounded-lg border border-border bg-secondary/30 p-3">
+              <p className="text-xs text-muted-foreground">Mejor puntaje</p>
+              <p className="font-display text-2xl">{stats.mejorPuntaje}/100</p>
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
+            <div>
+              <h2 className="mb-2.5 text-sm font-medium text-muted-foreground">
+                Promedio por aparato (de menor a mayor)
+              </h2>
+              <ul className="space-y-2.5">
+                {stats.porAparato.map((g) => (
+                  <li key={g.id} className="text-sm">
+                    <div className="mb-1 flex items-center justify-between gap-2">
+                      <span>
+                        {g.nombre}{" "}
+                        <span className="text-xs text-muted-foreground">({g.cantidad})</span>
+                      </span>
+                      <span className="font-medium tabular-nums">{g.promedio}/100</span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-secondary">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all"
+                        style={{ width: `${Math.min(100, Math.max(0, g.promedio))}%` }}
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h2 className="mb-2.5 text-sm font-medium text-muted-foreground">
+                Promedio por dificultad
+              </h2>
+              <ul className="space-y-2.5">
+                {stats.porDificultad.map((g) => (
+                  <li key={g.id} className="text-sm">
+                    <div className="mb-1 flex items-center justify-between gap-2">
+                      <span>
+                        {g.nombre}{" "}
+                        <span className="text-xs text-muted-foreground">({g.cantidad})</span>
+                      </span>
+                      <span className="font-medium tabular-nums">{g.promedio}/100</span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-secondary">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all"
+                        style={{ width: `${Math.min(100, Math.max(0, g.promedio))}%` }}
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
       )}
 
       {lista.length === 0 && (
@@ -154,7 +237,12 @@ function Historial() {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => setAbierto(esAbierto ? null : r.id)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    aria-expanded={esAbierto}
+                    onClick={() => setAbierto(esAbierto ? null : r.id)}
+                  >
                     <ChevronDown className={esAbierto ? "size-4 rotate-180" : "size-4"} />
                     {esAbierto ? "Ocultar" : "Ver devolución"}
                   </Button>

@@ -12,9 +12,11 @@ type Msg = { de: "medico" | "paciente"; texto: string };
 export function AnamnesisChat({
   banco,
   onTranscripcion,
+  modoExamen = false,
 }: {
   banco: CasoBanco;
   onTranscripcion: (texto: string, ids: string[]) => void;
+  modoExamen?: boolean;
 }) {
   const [mensajes, setMensajes] = useState<Msg[]>([]);
   const [ids, setIds] = useState<string[]>([]);
@@ -43,11 +45,18 @@ export function AnamnesisChat({
       <div className="border-b border-border bg-secondary/40 px-4 py-2.5 text-xs text-muted-foreground">
         Consultorio · el paciente responde según el tema que le preguntes
       </div>
-      <div className="flex-1 space-y-3 overflow-y-auto p-4">
+      <div
+        role="log"
+        aria-live="polite"
+        aria-label="Conversación con el paciente"
+        className="flex-1 space-y-3 overflow-y-auto p-4"
+      >
         {mensajes.length === 0 && (
           <div className="mx-auto max-w-md py-10 text-center text-sm text-muted-foreground">
             <p className="mb-2 font-medium text-foreground">Un paciente entra al consultorio.</p>
-            <p>Preguntá una cosa por vez: nombre, edad, qué le pasa, desde cuándo, cómo es el dolor, antecedentes, medicación...</p>
+            {!modoExamen && (
+              <p>Preguntá una cosa por vez: nombre, edad, qué le pasa, desde cuándo, cómo es el dolor, antecedentes, medicación...</p>
+            )}
           </div>
         )}
         {mensajes.map((m, i) => (
@@ -74,6 +83,7 @@ export function AnamnesisChat({
             }
           }}
           rows={2}
+          aria-label="Pregunta al paciente"
           placeholder="¿Qué le preguntás al paciente?"
           className="resize-none"
         />

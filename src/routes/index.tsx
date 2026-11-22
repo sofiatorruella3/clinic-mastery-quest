@@ -5,9 +5,11 @@ import {
   Bone,
   Brain,
   Bug,
+  Clock,
   Droplet,
   Ear,
   Eye,
+  GraduationCap,
   ScanFace,
   Heart,
   Stethoscope,
@@ -68,6 +70,7 @@ function Inicio() {
   const toggle = (id: string) =>
     setAparatos((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   const [dificultad, setDificultad] = useState<Dificultad>("moderada");
+  const [modo, setModo] = useState<"practica" | "examen">("practica");
 
   return (
     <main className="mx-auto max-w-5xl px-5 py-12 md:py-16">
@@ -112,6 +115,7 @@ function Inicio() {
               <button
                 key={a.id}
                 type="button"
+                aria-pressed={activo}
                 onClick={() => toggle(a.id)}
                 className={cn(
                   "card-clinica group cursor-pointer p-4 text-left transition-all hover:-translate-y-0.5",
@@ -147,6 +151,7 @@ function Inicio() {
               <button
                 key={d.id}
                 type="button"
+                aria-pressed={activo}
                 onClick={() => setDificultad(d.id)}
                 className={cn(
                   "card-clinica cursor-pointer p-4 text-left transition-all hover:-translate-y-0.5",
@@ -163,16 +168,57 @@ function Inicio() {
         </div>
       </section>
 
+      <section className="mb-10">
+        <h2 className="mb-1 text-2xl">Modo</h2>
+        <p className="mb-5 text-sm text-muted-foreground">
+          Practicá sin apuro o entrená bajo tiempo como en una evaluación real.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <button
+            type="button"
+            aria-pressed={modo === "practica"}
+            onClick={() => setModo("practica")}
+            className={cn(
+              "card-clinica cursor-pointer p-4 text-left transition-all hover:-translate-y-0.5",
+              modo === "practica" && "border-primary ring-2 ring-primary/25",
+            )}
+          >
+            <span className="flex items-center gap-2 font-medium">
+              <GraduationCap className="size-4 text-primary" /> Práctica
+            </span>
+            <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+              Sin límite de tiempo y con ayudas orientativas en cada etapa.
+            </span>
+          </button>
+          <button
+            type="button"
+            aria-pressed={modo === "examen"}
+            onClick={() => setModo("examen")}
+            className={cn(
+              "card-clinica cursor-pointer p-4 text-left transition-all hover:-translate-y-0.5",
+              modo === "examen" && "border-primary ring-2 ring-primary/25",
+            )}
+          >
+            <span className="flex items-center gap-2 font-medium">
+              <Clock className="size-4 text-primary" /> Modo examen (15 min)
+            </span>
+            <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+              Cuenta regresiva de 15 minutos, sin ayudas ni ejemplos. Al terminar el tiempo se evalúa automáticamente.
+            </span>
+          </button>
+        </div>
+      </section>
+
       <div className="flex flex-wrap items-center gap-4">
         <Button
           size="lg"
           disabled={aparatos.length === 0}
           onClick={() =>
             aparatos.length > 0 &&
-            navigate({ to: "/simulacion", search: { aparato: aparatos.join(","), dificultad } })
+            navigate({ to: "/simulacion", search: { aparato: aparatos.join(","), dificultad, modo } })
           }
         >
-          Comenzar simulación
+          {modo === "examen" ? "Comenzar examen" : "Comenzar simulación"}
         </Button>
         {aparatos.length === 0 && (
           <span className="text-sm text-muted-foreground">
@@ -180,11 +226,6 @@ function Inicio() {
           </span>
         )}
       </div>
-
-      <footer className="mt-16 border-t border-border pt-6 text-xs leading-relaxed text-muted-foreground">
-        Herramienta educativa. Los casos son ficticios y redactados en base a guías nacionales argentinas: no
-        reemplazan el juicio clínico ni constituyen recomendación médica.
-      </footer>
     </main>
   );
 }

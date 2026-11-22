@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Loader2, Send, Stethoscope } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Loader2, Send, Stethoscope } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 
@@ -21,9 +21,12 @@ import {
 } from "@/lib/simulacion-tipos";
 import { cn } from "@/lib/utils";
 
+const DURACION_EXAMEN_SEG = 15 * 60;
+
 const searchSchema = z.object({
   aparato: z.string().default("cardiovascular"),
   dificultad: z.enum(["baja", "moderada", "dificil"]).default("moderada"),
+  modo: z.enum(["practica", "examen"]).default("practica"),
   repetir: z.string().optional(),
 });
 
@@ -50,7 +53,8 @@ export const Route = createFileRoute("/simulacion")({
 });
 
 function Simulacion() {
-  const { aparato, dificultad, repetir } = Route.useSearch();
+  const { aparato, dificultad, modo, repetir } = Route.useSearch();
+  const modoExamen = modo === "examen";
   const navigate = useNavigate();
 
   const ids = aparato.split(",").filter(Boolean);
@@ -71,6 +75,8 @@ function Simulacion() {
 
   const [anamnesisIds, setAnamnesisIds] = useState<string[]>([]);
   const [banco, setBanco] = useState<CasoBanco | null>(null);
+  const [segundosRestantes, setSegundosRestantes] = useState(DURACION_EXAMEN_SEG);
+  const [tiempoAgotado, setTiempoAgotado] = useState(false);
 
   const iniciado = useRef(false);
   useEffect(() => {
@@ -122,6 +128,27 @@ function Simulacion() {
 
   const caso: Caso | null = useMemo(() => (banco ? aCaso(banco) : null), [banco]);
 
+  const finalizarRef = useRef(finalizar);
+  finalizarRef.current = finalizar;
+
+  useEffect(() => {
+    if (!modoExamen || !banco || etapa === "feedback") return;
+    const id = window.setInterval(() => {
+      setSegundosRestantes((prev) => {
+        if (prev <= 1) {
+          window.clearInterval(id);
+          setTiempoAgotado(true);
+          queueMicrotask(() => finalizarRef.current());
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [modoExamen, banco, etapa]);
+
+  const formatoTiempo = `${String(Math.floor(segundosRestantes / 60)).padStart(2, "0")}:${String(segundosRestantes % 60).padStart(2, "0")}`;
+
   if (!banco || !caso) {
     return (
       <main className="mx-auto flex max-w-2xl items-center justify-center gap-2 px-5 py-24 text-sm text-muted-foreground">
@@ -141,23 +168,50 @@ function Simulacion() {
         >
           <ArrowLeft className="size-4" /> Nuevo caso
         </Link>
-        <span className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">
-          {etiquetaAparato} · Dificultad {nombreDificultad}
-        </span>
+        <div className="flex flex-wrap items-center gap-2">
+          {modoExamen && etapa !== "feedback" && (
+            <span
+              aria-label={`Tiempo restante: ${formatoTiempo}`}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium tabular-nums",
+                segundosRestantes <= 120
+                  ? "border-destructive/40 bg-destructive/10 text-destructive"
+                  : "border-primary/30 bg-primary/10 text-primary",
+              )}
+            >
+              <Clock className="size-3.5" /> {formatoTiempo}
+            </span>
+          )}
+          <span className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">
+            {etiquetaAparato} · Dificultad {nombreDificultad}
+            {modoExamen ? " · Examen" : ""}
+          </span>
+        </div>
       </div>
+
+      {tiempoAgotado && (
+        <div
+          role="alert"
+          className="mb-6 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+        >
+          Se agotó el tiempo del modo examen. Se evaluó automáticamente lo que completaste hasta ese momento.
+        </div>
+      )}
 
       <section className="card-clinica mb-6 p-6">
         <div className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
           <Stethoscope className="size-3.5" /> Nuevo paciente
         </div>
         <h1 className="text-3xl md:text-4xl">Un paciente espera ser atendido</h1>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          No tenés datos previos: obtené su filiación, motivo de consulta y antecedentes en la
-          anamnesis, y los signos vitales en el examen físico.
-        </p>
+        {!modoExamen && (
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            No tenés datos previos: obtené su filiación, motivo de consulta y antecedentes en la
+            anamnesis, y los signos vitales en el examen físico.
+          </p>
+        )}
       </section>
 
-      <nav className="mb-8 flex flex-wrap gap-1.5">
+      <nav aria-label="Etapas de la simulación" className="mb-8 flex flex-wrap gap-1.5">
         {ETAPAS.map((e, i) => {
           const habilitada = e.id !== "feedback" || !!feedback;
           return (
@@ -165,6 +219,7 @@ function Simulacion() {
               key={e.id}
               type="button"
               disabled={!habilitada}
+              aria-current={etapa === e.id ? "step" : undefined}
               onClick={() => habilitada && setEtapa(e.id)}
               className={cn(
                 "cursor-pointer rounded-full border px-3 py-1.5 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40",
@@ -184,9 +239,13 @@ function Simulacion() {
       {etapa === "anamnesis" && (
         <Seccion
           titulo="Anamnesis"
-          ayuda="Entrevistá al paciente como en el consultorio. Conducí la entrevista según el modelo Calgary-Cambridge, con perspectiva de derechos y género. Preguntá una cosa por vez."
+          ayuda={
+            modoExamen
+              ? undefined
+              : "Entrevistá al paciente como en el consultorio. Conducí la entrevista según el modelo Calgary-Cambridge, con perspectiva de derechos y género. Preguntá una cosa por vez."
+          }
         >
-          <AnamnesisChat banco={banco} onTranscripcion={onTranscripcion} />
+          <AnamnesisChat banco={banco} onTranscripcion={onTranscripcion} modoExamen={modoExamen} />
           <Avanzar onClick={() => setEtapa("examen")} texto="Pasar al examen físico" />
         </Seccion>
       )}
@@ -194,14 +253,22 @@ function Simulacion() {
       {etapa === "examen" && (
         <Seccion
           titulo="Examen físico"
-          ayuda="Indicá qué maniobras realizás (ej.: 'inspección general, auscultación cardíaca y pulmonar, palpación abdominal, edemas de MMII'). Solo vas a obtener los hallazgos de lo que pidas."
+          ayuda={
+            modoExamen
+              ? undefined
+              : "Indicá qué maniobras realizás (ej.: 'inspección general, auscultación cardíaca y pulmonar, palpación abdominal, edemas de MMII'). Solo vas a obtener los hallazgos de lo que pidas."
+          }
         >
           <EtapaSolicitudes
             banco={banco}
             etapaId="examen"
             solicitudes={examenFisico}
             setSolicitudes={setExamenFisico}
-            placeholder="Ej.: auscultación cardíaca y pulmonar, TA en ambos brazos, pulsos periféricos"
+            placeholder={
+              modoExamen
+                ? "Indicá las maniobras de examen físico..."
+                : "Ej.: auscultación cardíaca y pulmonar, TA en ambos brazos, pulsos periféricos"
+            }
           />
           <Avanzar onClick={() => setEtapa("estudios")} texto="Pasar a estudios complementarios" />
         </Seccion>
@@ -210,14 +277,22 @@ function Simulacion() {
       {etapa === "estudios" && (
         <Seccion
           titulo="Estudios complementarios"
-          ayuda="Solicitá los estudios que consideres necesarios (laboratorio, ECG, imágenes, cultivos). Recordá el criterio de costo-efectividad."
+          ayuda={
+            modoExamen
+              ? undefined
+              : "Solicitá los estudios que consideres necesarios (laboratorio, ECG, imágenes, cultivos). Recordá el criterio de costo-efectividad."
+          }
         >
           <EtapaSolicitudes
             banco={banco}
             etapaId="estudios"
             solicitudes={estudios}
             setSolicitudes={setEstudios}
-            placeholder="Ej.: laboratorio con hemograma, urea, creatinina, ionograma y troponina; ECG de 12 derivaciones; Rx tórax F y P"
+            placeholder={
+              modoExamen
+                ? "Solicitá estudios complementarios..."
+                : "Ej.: laboratorio con hemograma, urea, creatinina, ionograma y troponina; ECG de 12 derivaciones; Rx tórax F y P"
+            }
           />
           <Avanzar
             onClick={() => setEtapa("diagnostico")}
@@ -229,12 +304,17 @@ function Simulacion() {
       {etapa === "diagnostico" && (
         <Seccion
           titulo="Diagnóstico presuntivo"
-          ayuda="Escribí tu diagnóstico presuntivo con los datos clave que lo sostienen. Los diferenciales solo mencionalos."
+          ayuda={
+            modoExamen
+              ? undefined
+              : "Escribí tu diagnóstico presuntivo con los datos clave que lo sostienen. Los diferenciales solo mencionalos."
+          }
         >
           <Textarea
             value={diagnostico}
             onChange={(e) => setDiagnostico(e.target.value)}
             rows={10}
+            aria-label="Diagnóstico presuntivo y diagnósticos diferenciales"
             placeholder="Diagnóstico presuntivo y fundamentación. Diferenciales: ..."
             className="min-h-48"
           />
@@ -245,12 +325,17 @@ function Simulacion() {
       {etapa === "tratamiento" && (
         <Seccion
           titulo="Tratamiento"
-          ayuda="Un pantallazo general de la conducta: medidas generales, grupos de fármacos, internación o derivación, interconsultas. No hace falta detallar dosis."
+          ayuda={
+            modoExamen
+              ? undefined
+              : "Un pantallazo general de la conducta: medidas generales, grupos de fármacos, internación o derivación, interconsultas. No hace falta detallar dosis."
+          }
         >
           <Textarea
             value={tratamiento}
             onChange={(e) => setTratamiento(e.target.value)}
             rows={10}
+            aria-label="Plan de tratamiento"
             placeholder="Conducta general: medidas, grupos de fármacos, internación o ambulatorio..."
             className="min-h-48"
           />
@@ -261,12 +346,17 @@ function Simulacion() {
       {etapa === "seguimiento" && (
         <Seccion
           titulo="Seguimiento"
-          ayuda="Plan de control: plazos, parámetros a monitorear, pautas de alarma, prevención y educación al paciente."
+          ayuda={
+            modoExamen
+              ? undefined
+              : "Plan de control: plazos, parámetros a monitorear, pautas de alarma, prevención y educación al paciente."
+          }
         >
           <Textarea
             value={seguimiento}
             onChange={(e) => setSeguimiento(e.target.value)}
             rows={10}
+            aria-label="Plan de seguimiento"
             placeholder="Controles, pautas de alarma, prevención secundaria, educación al paciente..."
             className="min-h-48"
           />
@@ -302,13 +392,17 @@ function Seccion({
   children,
 }: {
   titulo: string;
-  ayuda: string;
+  ayuda: string | undefined;
   children: React.ReactNode;
 }) {
   return (
     <section>
       <h2 className="text-2xl">{titulo}</h2>
-      <p className="mt-1 mb-5 max-w-3xl text-sm leading-relaxed text-muted-foreground">{ayuda}</p>
+      {ayuda ? (
+        <p className="mt-1 mb-5 max-w-3xl text-sm leading-relaxed text-muted-foreground">{ayuda}</p>
+      ) : (
+        <div className="mb-4" />
+      )}
       {children}
     </section>
   );
@@ -369,7 +463,17 @@ function EtapaSolicitudes({
         <Textarea
           value={pedido}
           onChange={(e) => setPedido(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              const texto = pedido.trim();
+              if (!texto) return;
+              setPedido("");
+              mutation.mutate(texto);
+            }
+          }}
           rows={3}
+          aria-label={etapaId === "examen" ? "Maniobra de examen físico" : "Estudio complementario"}
           placeholder={placeholder}
           className="resize-none border-0 shadow-none focus-visible:ring-0"
         />
