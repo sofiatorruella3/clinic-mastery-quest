@@ -28,5 +28,7 @@ export type CasoBanco = {
   trat: Clave[];
   seg: Clave[];
   evitar: string[];
+  /** Conductas peligrosas o contraindicadas en este caso: [descripción, claves]. Restan puntaje si el alumno las indica. */
+  peligros?: Clave[];
   guias: string[];
 };

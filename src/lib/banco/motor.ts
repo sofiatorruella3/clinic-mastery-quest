@@ -53,6 +53,50 @@ export function coincide(texto: string, claves: string, difuso = false) {
   });
 }
 
+const NEGACIONES = new Set([
+  "no", "sin", "nunca", "ni", "niego", "descarto", "descartar", "descartado", "descartaria",
+  "excluyo", "excluir", "improbable", "evito", "evitar", "contraindicado", "contraindicada",
+]);
+/** Palabras que "cortan" el alcance de una negación ("no es angina sino infarto"). */
+const CORTES = new Set(["sino", "pero", "aunque", "excepto", "salvo"]);
+/** Verbos de indicación: cortan solo la negación "sin" ("sin alergias dar aspirina"), no "no indicar aspirina". */
+const VERBOS = new Set(["dar", "indicar", "administrar", "iniciar", "pedir", "solicitar", "realizar", "hacer", "agregar", "sumar"]);
+const VENTANA_NEGACION = 5;
+
+/** ¿Está negada la mención que empieza después de `previas` (palabras anteriores en la misma cláusula)? */
+function estaNegada(previas: string[]): boolean {
+  let verboVisto = false;
+  for (let i = previas.length - 1, n = 0; i >= 0 && n < VENTANA_NEGACION; i--, n++) {
+    const p = previas[i]!;
+    if (CORTES.has(p)) return false;
+    if (VERBOS.has(p)) verboVisto = true;
+    if (NEGACIONES.has(p)) return !(p === "sin" && verboVisto);
+  }
+  return false;
+}
+
+/**
+ * Como `coincide`, pero ignora las menciones negadas: "no creo que sea infarto" o
+ * "descarto disección" NO cuentan como haber indicado ese diagnóstico o conducta.
+ */
+export function afirma(texto: string, claves: string): boolean {
+  const clausulas = texto.split(/[.,;:!?()\n]+/);
+  const ks = claves.split("|").map((c) => norm(c).trim()).filter(Boolean);
+  return clausulas.some((cl) => {
+    const t = ` ${norm(cl).trim()} `;
+    return ks.some((k) => {
+      let desde = 0;
+      for (;;) {
+        const idx = t.indexOf(` ${k}`, desde);
+        if (idx === -1) return false;
+        const previas = t.slice(0, idx).trim().split(" ").filter(Boolean);
+        if (!estaNegada(previas)) return true;
+        desde = idx + 1;
+      }
+    });
+  });
+}
+
 const ACTIVIDADES = "actividades|actividad diaria|vida diaria|dia a dia|rutina|escalera|subir|cuadras|caminar|esfuerzo|tareas|limita|cansa|agita|hacer cosas|quehaceres";
 
 function ctxCaso(b: CasoBanco) {
@@ -416,19 +460,31 @@ function evaluarItems(nombre: string, items: Item[], texto: string, extra: strin
   };
 }
 
-function evaluarClaves(nombre: string, claves: Clave[], texto: string): FeedbackEtapa {
-  const hechos = claves.filter((c) => coincide(texto, c[1]));
-  const puntaje = claves.length ? Math.round((hechos.length / claves.length) * 100) : 100;
+function evaluarClaves(nombre: string, claves: Clave[], texto: string, peligros: Clave[] = []): FeedbackEtapa {
+  const hechos = claves.filter((c) => afirma(texto, c[1]));
+  const base = claves.length ? Math.round((hechos.length / claves.length) * 100) : 100;
+  const indicados = peligros.filter((p) => afirma(texto, p[1]));
+  const puntaje = texto.trim() ? Math.max(0, base - indicados.length * PENALIZACION_PELIGRO) : 0;
   return {
     etapa: nombre,
-    puntaje: texto.trim() ? puntaje : 0,
+    puntaje,
     bienHecho: hechos.map((c) => c[0]),
-    errores: [],
+    errores: indicados.map((p) => `Conducta riesgosa o contraindicada en este caso: ${p[0]}`),
     faltoRealizar: claves.filter((c) => !hechos.includes(c)).map((c) => c[0]),
     aEvitar: [],
-    comentario: texto.trim() ? "Comparado con la conducta recomendada por las guías nacionales." : "No completaste esta etapa.",
+    comentario: texto.trim()
+      ? indicados.length
+        ? "Indicaste conductas que las guías desaconsejan en este paciente; cada una resta puntaje."
+        : "Comparado con la conducta recomendada por las guías nacionales."
+      : "No completaste esta etapa.",
   };
 }
+
+/** Puntos que resta cada conducta peligrosa indicada. */
+const PENALIZACION_PELIGRO = 30;
+/** Cantidad de estudios a partir de la cual se considera "pedir de más". */
+const MAX_ESTUDIOS_RAZONABLES = 12;
+const PENALIZACION_ESTUDIO_EXTRA = 4;
 
 export function evaluar(
   b: CasoBanco,
@@ -437,9 +493,14 @@ export function evaluar(
   const anam = evaluarItems("Anamnesis", itemsAnamnesis(b), "", r.anamnesisIds);
   const ex = evaluarItems("Examen físico", b.ex, r.examenFisico.map((s) => s.pedido).join(" . "));
   const est = evaluarItems("Estudios complementarios", b.est, r.estudios.map((s) => s.pedido).join(" . "));
+  const extra = Math.max(0, r.estudios.length - MAX_ESTUDIOS_RAZONABLES);
+  if (extra > 0) {
+    est.puntaje = Math.max(0, est.puntaje - extra * PENALIZACION_ESTUDIO_EXTRA);
+    est.aEvitar = [`Pediste ${r.estudios.length} estudios: pedir de más expone al paciente a costos y riesgos sin aportar al diagnóstico (priorizá los dirigidos por la clínica).`];
+  }
 
-  const dxOk = coincide(r.diagnostico, b.dxClaves);
-  const difsHit = b.difs.filter((d) => coincide(r.diagnostico, d[1]));
+  const dxOk = afirma(r.diagnostico, b.dxClaves);
+  const difsHit = b.difs.filter((d) => afirma(r.diagnostico, d[1]));
   const dxPuntaje = Math.min(100, (dxOk ? 70 : 0) + Math.round(Math.min(1, difsHit.length / 2) * 30));
   const dx: FeedbackEtapa = {
     etapa: "Diagnóstico presuntivo",
@@ -451,12 +512,13 @@ export function evaluar(
     comentario: dxOk ? "Llegaste al diagnóstico correcto." : "Revisá qué datos de la anamnesis y el examen orientaban al diagnóstico.",
   };
 
-  const trat = evaluarClaves("Tratamiento", b.trat, r.tratamiento);
+  const trat = evaluarClaves("Tratamiento", b.trat, r.tratamiento, b.peligros);
   trat.aEvitar = b.evitar;
   const seg = evaluarClaves("Seguimiento", b.seg, r.seguimiento);
 
-   const etapas = [anam, ex, est, dx, trat, seg];
-   const pesos = [0.25, 0.2, 0.2, 0.25, 0.05, 0.05];
+  const etapas = [anam, ex, est, dx, trat, seg];
+  // Tratamiento y seguimiento pesan más que antes: tratar mal es más grave que omitir una pregunta.
+  const pesos = [0.2, 0.15, 0.15, 0.25, 0.15, 0.1];
   const global = Math.round(etapas.reduce((s, e, i) => s + e.puntaje * (pesos[i] ?? 0), 0));
 
   const debil = [...etapas].sort((a, c) => a.puntaje - c.puntaje).slice(0, 2);

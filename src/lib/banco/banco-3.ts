@@ -124,6 +124,7 @@ export const BANCO_3: CasoBanco[] = [
     trat: [["Antibiótico empírico de amplio espectro inmediato por neutropenia febril", "antibiotico|piperacilina|cefepime|meropenem|neutropenia febril"], ["Transfusión de glóbulos rojos y plaquetas", "transfus|globulos rojos|plaquetas|hemoderivado"], ["Hidratación y prevención de lisis tumoral (alopurinol)", "alopurinol|hidratacion|lisis"], ["Derivación / internación en hematología (aislamiento)", "hematolog|internacion|aislamiento|derivacion"]],
     seg: [["Quimioterapia de inducción según protocolo", "quimioterapia|induccion|protocolo"], ["Control diario de hemograma, coagulación y lisis tumoral", "hemograma|control|diario|coagul"], ["Apoyo psicológico y familiar", "psicolog|familia|apoyo"]],
     evitar: ["Demorar el antibiótico en un paciente con neutropenia febril (debe darse en menos de 1 hora).", "Indicar AINEs o inyecciones intramusculares con plaquetopenia.", "Diagnosticar un cuadro viral sin mirar el frotis de sangre."],
+    peligros: [["AINEs con plaquetopenia", "aine|ibuprofeno|diclofenac|naproxeno|ketorolac|ketoprofeno"]],
     guias: ["Guías de Diagnóstico y Tratamiento – Sociedad Argentina de Hematología (SAH): leucemias agudas", "Consenso de Neutropenia Febril – Sociedad Argentina de Infectología (SADI)"],
   },
   // ───────── INFECTOLOGÍA ─────────
@@ -205,6 +206,7 @@ export const BANCO_3: CasoBanco[] = [
     trat: [["Internación para hidratación EV con cristaloides", "internacion|hidratacion|cristaloide|solucion fisiologica|ringer|expansion"], ["Paracetamol como único antitérmico", "paracetamol"], ["Suspender ibuprofeno / AINEs", "suspender|aine|ibuprofeno"], ["Monitoreo de hematocrito, diuresis y signos vitales", "monitoreo|control|hematocrito|diuresis"]],
     seg: [["Notificación obligatoria al sistema de vigilancia", "notific|vigilancia|epidemiolog|sisa"], ["Vigilar la fase crítica (48-72 h tras la defervescencia)", "fase critica|48|72|defervescencia"], ["Descacharrado y prevención de picaduras", "descacharr|repelente|mosquitero|prevencion|criaderos"], ["Alta con criterios y control ambulatorio", "alta|control|criterio"]],
     evitar: ["Indicar AINEs, aspirina o inyecciones intramusculares.", "Usar corticoides o antibióticos sin indicación.", "Dar el alta en la fase crítica con signos de alarma."],
+    peligros: [["AINEs o aspirina (riesgo de sangrado)", "aine|ibuprofeno|diclofenac|naproxeno|ketorolac|ketoprofeno|aspirina|aas|acido acetilsalicilico"]],
     guias: ["Guía para el equipo de salud: Enfermedades infecciosas – Dengue. Diagnóstico de dengue – Ministerio de Salud de la Nación", "Recomendaciones de la Sociedad Argentina de Infectología (SADI) sobre dengue"],
   },
   {

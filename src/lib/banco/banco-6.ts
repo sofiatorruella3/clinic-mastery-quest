@@ -204,6 +204,7 @@ export const BANCO_6: CasoBanco[] = [
     trat: [["Manejo ambulatorio con hidratación oral abundante", "hidratacion|liquidos|agua|oral|ambulatorio"], ["Paracetamol para fiebre y dolor", "paracetamol"], ["Reposo y uso de repelente/mosquitero", "reposo|repelente|mosquitero"], ["Notificación obligatoria", "notific"]],
     seg: [["Control clínico y de hemograma cada 24-48 h hasta 48 h sin fiebre", "control|24|48|diario|hemograma"], ["Pautas de alarma: dolor abdominal, vómitos, sangrado, somnolencia", "alarma|dolor abdominal|vomito|sangrado|pautas"], ["Eliminar criaderos de mosquitos", "criadero|descacharr|mosquito"]],
     evitar: ["Indicar AINEs o aspirina (riesgo de sangrado).", "Indicar antibióticos o corticoides.", "No notificar el caso sospechoso."],
+    peligros: [["AINEs o aspirina (riesgo de sangrado)", "aine|ibuprofeno|diclofenac|naproxeno|ketorolac|ketoprofeno|aspirina|aas|acido acetilsalicilico"]],
     guias: ["Guía para el equipo de salud: Dengue – Ministerio de Salud de la Nación (Dirección de Control de Enfermedades Transmitidas por Vectores)", "Manual de normas y procedimientos del Sistema Nacional de Vigilancia (SNVS)"],
   },
   {

@@ -93,6 +93,7 @@ export const BANCO_1: CasoBanco[] = [
     trat: [["Diuréticos de asa endovenosos", "furosemida|diuretico"], ["Oxigenoterapia / VNI si es necesario", "oxigeno|vni|ventilacion no invasiva|cpap"], ["Control de frecuencia de la FA", "control de frecuencia|betabloq|digoxina|amiodarona|diltiazem|frecuencia cardiaca"], ["Anticoagulación por FA", "anticoagul|heparina|enoxaparina|acenocumarol|apixaban|rivaroxaban"], ["Internación, balance hídrico y restricción de sodio", "internacion|balance|restriccion|sodio|sal|diuresis"]],
     seg: [["Tratamiento modificador de pronóstico (IECA/ARNI, betabloqueantes, antialdosterónicos, iSGLT2)", "betabloq|espironolactona|antialdost|isglt2|dapagliflozina|empagliflozina|sacubitril|arni|ieca|enalapril"], ["Educación: dieta hiposódica, peso diario, adherencia", "peso|dieta|sal|sodio|adherencia|educacion"], ["Control precoz ambulatorio (7-14 días) y pautas de alarma", "control|pautas de alarma|7 dias|14 dias|dias|consulta"], ["Anticoagulación crónica según CHA2DS2-VASc", "anticoagul|cha2ds2|chads"]],
     evitar: ["Olvidar buscar el factor desencadenante (FA, transgresión, abandono del tratamiento).", "Indicar AINEs o antiarrítmicos inotrópicos negativos (verapamilo) con FEVI reducida.", "Omitir la evaluación del riesgo tromboembólico en la fibrilación auricular."],
+    peligros: [["AINEs en insuficiencia cardíaca con FEVI reducida", "aine|ibuprofeno|diclofenac|naproxeno|ketorolac|ketoprofeno"], ["Verapamilo/diltiazem con FEVI reducida", "verapamilo|diltiazem"]],
     guias: ["Consenso de Insuficiencia Cardíaca – Sociedad Argentina de Cardiología (SAC)", "Consenso de Fibrilación Auricular – SAC"],
   },
   {
@@ -136,6 +137,7 @@ export const BANCO_1: CasoBanco[] = [
     trat: [["Cirugía cardiovascular de urgencia", "cirugia|cirujano|quirurg|cardiovascular|reemplazo"], ["Control del dolor con opioides", "morfina|opioide|analges|dolor"], ["Control estricto de FC y TA (betabloqueante EV, luego vasodilatador)", "betabloq|labetalol|esmolol|nitroprusiato|control de la presion|frecuencia|tension"], ["Internación en unidad de cuidados intensivos", "uti|unidad coronaria|terapia|cuidados intensivos|internacion"]],
     seg: [["Control estricto de la TA de por vida", "presion|tension|hipertens|antihipertens"], ["Imágenes seriadas de aorta", "angiotomo|tomografia|imagen|resonancia|control de aorta"], ["Suspender cocaína y tabaco", "cocaina|droga|tabaco|fumar|consumo"], ["Tamizaje familiar", "familia|familiares|tamizaje|screening"]],
     evitar: ["Anticoagular o antiagregar ante un dolor torácico desgarrante sin descartar disección.", "Omitir la toma de TA en ambos brazos y la palpación de pulsos.", "Usar vasodilatadores sin betabloqueo previo (taquicardia refleja)."],
+    peligros: [["Anticoagular, antiagregar o fibrinolizar sin descartar disección aórtica", "heparina|enoxaparina|anticoagul|aspirina|aas|clopidogrel|antiagreg|fibrinolis|trombolis"]],
     guias: ["Guía Nacional de Hipertensión Arterial – Ministerio de Salud de la Nación", "Consenso de Síndromes Aórticos Agudos – Sociedad Argentina de Cardiología"],
   },
   // ───────── RESPIRATORIO ─────────
@@ -181,6 +183,7 @@ export const BANCO_1: CasoBanco[] = [
     trat: [["Tratamiento ambulatorio por CURB-65 bajo", "ambulatorio|domicilio|curb|curb65|psi|casa"], ["Antibiótico empírico (amoxicilina)", "amoxicilina|antibiotico|betalact|macrolido|claritromicina|azitromicina"], ["Antitérmicos, hidratación y reposo", "paracetamol|antiterm|hidrat|reposo|ibuprofeno"]],
     seg: [["Control clínico a las 48-72 h", "48|72|control|horas|reevalu"], ["Pautas de alarma", "alarma|signos de alarma|pautas|consultar"], ["Cesación tabáquica y vacunación antigripal y antineumocócica", "vacuna|antineumococ|antigripal|tabaco|fumar"]],
     evitar: ["Internar a un paciente con CURB-65 bajo sin otros criterios.", "Indicar quinolonas como primera línea en un paciente sano sin factores de riesgo.", "Olvidar calcular un score de gravedad (CURB-65 o PSI)."],
+    peligros: [["Quinolonas como primera línea en neumonía de paciente sano", "quinolona|levofloxacina|ciprofloxacina|moxifloxacina"]],
     guias: ["Recomendaciones para el manejo de la neumonía aguda de la comunidad – Sociedad Argentina de Infectología (SADI) y AAMR", "Guía de Práctica Clínica Nacional de Neumonía Aguda de la Comunidad – Ministerio de Salud de la Nación"],
   },
   {

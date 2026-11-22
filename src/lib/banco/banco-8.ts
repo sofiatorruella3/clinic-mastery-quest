@@ -48,6 +48,7 @@ export const BANCO_8: CasoBanco[] = [
     trat: [["Diuréticos de asa para descongestión", "diuretico|furosemida|asa"], ["Restricción de sodio y control de peso diario", "sal|sodio|peso"], ["Control de frecuencia y anticoagulación de la FA según CHA2DS2-VASc", "anticoag|frecuencia|betabloq|cha2ds2"], ["Suspender AINEs", "aine|ibuprofeno|suspender"], ["Optimizar tratamiento de IC con FEVI reducida (cuádruple terapia)", "ieca|ara|sacubitril|betabloq|espironolactona|antialdosteron|sglt2|dapagliflozina|empagliflozina"]],
     seg: [["Control precoz en 7-14 días con función renal e ionograma", "control|semana|ionograma|potasio|renal"], ["Educación en signos de alarma y peso diario", "educa|peso|alarma"], ["Seguimiento en programa de IC/cardiología", "cardiolog|programa|seguimiento"]],
     evitar: ["Indicar AINEs.", "Usar verapamilo/diltiazem con FEVI reducida.", "Omitir anticoagulación en FA con CHA2DS2-VASc elevado."],
+    peligros: [["AINEs en este paciente", "aine|ibuprofeno|diclofenac|naproxeno|ketorolac|ketoprofeno"], ["Verapamilo/diltiazem con FEVI reducida", "verapamilo|diltiazem"]],
     guias: ["Sociedad Argentina de Cardiología (SAC) – Consenso de Insuficiencia Cardíaca", "SAC – Consenso de Fibrilación Auricular"],
   },
   {
@@ -312,6 +313,7 @@ export const BANCO_8: CasoBanco[] = [
     trat: [["Derivación urgente a centro de hematología", "deriv|hematolog"], ["Soporte transfusional (plaquetas, glóbulos rojos, plasma/crioprecipitado)", "transfus|plaquetas|globulos|crio|plasma"], ["Antibióticos empíricos si neutropenia febril", "antibiotico|neutropenia"], ["Prevención de síndrome de lisis tumoral (hidratación, hipouricemiantes)", "lisis|hidrata|alopurinol|rasburicasa"]],
     seg: [["Seguimiento hematológico para quimioterapia de inducción", "quimio|induccion|hematolog"], ["Acompañamiento psicológico y familiar", "psicolog|familia|contencion"]],
     evitar: ["Indicar AINEs o inyecciones intramusculares.", "Dar corticoides antes del diagnóstico de médula.", "Dar el alta con hemograma alterado sin diagnóstico."],
+    peligros: [["AINEs en este paciente", "aine|ibuprofeno|diclofenac|naproxeno|ketorolac|ketoprofeno"]],
     guias: ["Sociedad Argentina de Hematología (SAH) – Guías de Diagnóstico y Tratamiento: Leucemias agudas"],
   },
   {

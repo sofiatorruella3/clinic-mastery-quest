@@ -339,6 +339,7 @@ export const BANCO_10: CasoBanco[] = [
     trat: [["Hidratación oral abundante", "hidrat|agua|liquido|suero oral"], ["Paracetamol; evitar AINEs y aspirina", "paracetamol|evitar aine|no aspirina|no ibuprofeno"], ["Reposo y mosquitero en fase febril", "reposo|mosquitero|repelente"]],
     seg: [["Control diario con hemograma hasta 48 h sin fiebre", "control|diario|hemograma|48"], ["Pautas de alarma tras el descenso de la fiebre", "alarma|dolor abdominal|vomito|sangrado"], ["Notificación epidemiológica", "notific|epidemiolog|sniv"]],
     evitar: ["Indicar AINEs, aspirina o corticoides.", "Dar el alta sin pautas de alarma ni control."],
+    peligros: [["AINEs, aspirina o corticoides contraindicados en este caso", "aine|ibuprofeno|diclofenac|naproxeno|ketorolac|ketoprofeno|aspirina|aas|acido acetilsalicilico|corticoide|prednisona|dexametasona|metilprednisolona|hidrocortizona|hidrocortisona"]],
     guias: ["Ministerio de Salud de la Nación – Guía para el equipo de salud: Dengue", "SADI – Recomendaciones sobre arbovirosis"],
   },
   {

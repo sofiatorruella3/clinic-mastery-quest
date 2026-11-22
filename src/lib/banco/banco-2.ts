@@ -126,6 +126,7 @@ export const BANCO_2: CasoBanco[] = [
     trat: [["Reposición de volumen con cristaloides", "cristaloide|solucion fisiologica|expansion|hidratacion|ringer|volumen"], ["Tratamiento de la hiperpotasemia (gluconato de calcio, insulina con dextrosa, salbutamol)", "gluconato|calcio|insulina|dextrosa|salbutamol|resina|hiperpotasemia|potasio"], ["Suspender IECA, diurético y AINEs", "suspender|enalapril|ieca|diuretico|aine|ibuprofeno"], ["Control de diuresis y ionograma seriado", "diuresis|ionograma|control|balance|sonda"]],
     seg: [["Recontrolar función renal antes de reintroducir fármacos", "funcion renal|creatinina|control|reintroduc"], ["Evitar AINEs en adultos mayores", "aine|paracetamol|evitar"], ["Educar sobre hidratación y 'días de enfermedad' (suspender IECA/diuréticos)", "hidrat|dias de enfermedad|educ|suspender"]],
     evitar: ["Iniciar diálisis sin tratar primero causas reversibles.", "Omitir el ECG ante hiperpotasemia.", "Continuar IECA, diuréticos y AINEs en una lesión renal aguda."],
+    peligros: [["AINEs en lesión renal aguda", "aine|ibuprofeno|diclofenac|naproxeno|ketorolac|ketoprofeno"]],
     guias: ["Guía de Práctica Clínica de Lesión Renal Aguda – Sociedad Argentina de Nefrología (SAN)", "Guía de Práctica Clínica Nacional de Prevención y Detección de la Enfermedad Renal Crónica – Ministerio de Salud de la Nación"],
   },
   // ───────── NEUROLÓGICO ─────────

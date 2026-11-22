@@ -1,26 +1,26 @@
-# Simulador Clínico
+﻿# Simulador ClÃ­nico
 
-Aplicación web interactiva de simulación de casos clínicos diseñada para estudiantes de medicina. Permite practicar el razonamiento clínico de principio a fin y recibir una devolución estructurada basada en guías de práctica clínica.
+AplicaciÃ³n web interactiva de simulaciÃ³n de casos clÃ­nicos diseÃ±ada para estudiantes de medicina. Permite practicar el razonamiento clÃ­nico de principio a fin y recibir una devoluciÃ³n estructurada basada en guÃ­as de prÃ¡ctica clÃ­nica.
 
-**[Abrir aplicación en vivo →](https://sofiatorruella3.github.io/clinic-mastery-quest/)**
+**[Abrir aplicaciÃ³n en vivo â†’](https://sofiatorruella3.github.io/clinic-mastery-quest/)**
 
 ---
 
-## Características principales
+## CaracterÃ­sticas principales
 
-- **13 aparatos y sistemas:** Cardiovascular, Respiratorio, Digestivo, Nefrourológico, Neurológico, Endocrino-metabólico, Hematológico, Infectología, Reumatológico / Osteoarticular, Ginecoobstétrico, Dermatología, Otorrinolaringología y Oftalmología.
-- **3 niveles de dificultad:** Baja, Moderada y Difícil, variando la presentación clínica, comorbilidades y diagnósticos diferenciales.
-- **Flujo clínico en 6 etapas:**
+- **13 aparatos y sistemas:** Cardiovascular, Respiratorio, Digestivo, NefrourolÃ³gico, NeurolÃ³gico, Endocrino-metabÃ³lico, HematolÃ³gico, InfectologÃ­a, ReumatolÃ³gico / Osteoarticular, GinecoobstÃ©trico, DermatologÃ­a, OtorrinolaringologÃ­a y OftalmologÃ­a.
+- **3 niveles de dificultad:** Baja, Moderada y DifÃ­cil, variando la presentaciÃ³n clÃ­nica, comorbilidades y diagnÃ³sticos diferenciales.
+- **Flujo clÃ­nico en 6 etapas:**
   1. **Anamnesis:** entrevista conversacional interactiva con el paciente.
-  2. **Examen físico:** solicitud de maniobras y signos con valores concretos.
-  3. **Estudios complementarios:** pedido e interpretación de laboratorio e imágenes.
-  4. **Diagnóstico presuntivo.**
+  2. **Examen fÃ­sico:** solicitud de maniobras y signos con valores concretos.
+  3. **Estudios complementarios:** pedido e interpretaciÃ³n de laboratorio e imÃ¡genes.
+  4. **DiagnÃ³stico presuntivo.**
   5. **Tratamiento.**
   6. **Seguimiento.**
-- **Devolución basada en guías:** al finalizar cada caso se genera un puntaje y un análisis por etapa indicando aciertos, errores, aspectos omitidos, conductas a evitar y las guías de práctica clínica de referencia.
-- **Historial de prácticas:** guarda localmente en el navegador los casos completados para revisarlos cuando quieras.
+- **DevoluciÃ³n basada en guÃ­as:** al finalizar cada caso se genera un puntaje y un anÃ¡lisis por etapa indicando aciertos, errores, aspectos omitidos, conductas a evitar y las guÃ­as de prÃ¡ctica clÃ­nica de referencia.
+- **Historial de prÃ¡cticas:** guarda localmente en el navegador los casos completados para revisarlos cuando quieras.
 
-## Tecnologías
+## TecnologÃ­as
 
 - [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
 - [Vite](https://vite.dev/)
@@ -38,7 +38,7 @@ npm install
 npm run dev
 ```
 
-Para generar la compilación de producción:
+Para generar la compilaciÃ³n de producciÃ³n:
 
 ```bash
 npm run build
@@ -46,4 +46,4 @@ npm run build
 
 ## Despliegue
 
-El sitio se compila y publica automáticamente en **GitHub Pages** mediante GitHub Actions (`.github/workflows/deploy.yml`) en cada push a la rama `main`.
+El sitio se compila y publica automÃ¡ticamente en **GitHub Pages** mediante GitHub Actions (`.github/workflows/deploy.yml`) en cada push a la rama `main`.
