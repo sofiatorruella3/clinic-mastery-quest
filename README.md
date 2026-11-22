@@ -1,26 +1,49 @@
-# Clinical Case Sim
+# Simulador Clínico
 
-hola, quiero hacer una pagina interactiva de simulacion clinica enfocada para estudiantes de medicina. quiero que incluya los temas divididos por aparatos funcionales. La evaluacion por dificultad (baja, moderada, dificil) y en las preguntas que incluya anamnesis, examen fisico, estudios complementarios, diagnostico presuntivo, tratamiento y seguimiento. Una vez completada esta parte, me gustaria que genere un feedback en base a guias de practica clinica nacionales e internacionales altamente validadas en la practica clinica sobre cuales preguntas o acciones estuvieron bien hechas, cuales no, que faltaria mejorar, que se deberia evitar, entre otras.
+Aplicación web interactiva de simulación de casos clínicos diseñada para estudiantes de medicina. Permite practicar el razonamiento clínico de principio a fin y recibir una devolución estructurada basada en guías de práctica clínica.
 
-This project was built with [Lovable](https://lovable.dev).
+**[Abrir aplicación en vivo →](https://sofiatorruella3.github.io/clinic-mastery-quest/)**
 
-**Live app**: https://clinic-mastery-quest.lovable.app
+---
 
-## Build with Lovable
+## Características principales
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/db3dc111-01d9-40fd-a109-c8314197eb84).
+- **13 aparatos y sistemas:** Cardiovascular, Respiratorio, Digestivo, Nefrourológico, Neurológico, Endocrino-metabólico, Hematológico, Infectología, Reumatológico / Osteoarticular, Ginecoobstétrico, Dermatología, Otorrinolaringología y Oftalmología.
+- **3 niveles de dificultad:** Baja, Moderada y Difícil, variando la presentación clínica, comorbilidades y diagnósticos diferenciales.
+- **Flujo clínico en 6 etapas:**
+  1. **Anamnesis:** entrevista conversacional interactiva con el paciente.
+  2. **Examen físico:** solicitud de maniobras y signos con valores concretos.
+  3. **Estudios complementarios:** pedido e interpretación de laboratorio e imágenes.
+  4. **Diagnóstico presuntivo.**
+  5. **Tratamiento.**
+  6. **Seguimiento.**
+- **Devolución basada en guías:** al finalizar cada caso se genera un puntaje y un análisis por etapa indicando aciertos, errores, aspectos omitidos, conductas a evitar y las guías de práctica clínica de referencia.
+- **Historial de prácticas:** guarda localmente en el navegador los casos completados para revisarlos cuando quieras.
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+## Tecnologías
 
-## Development
+- [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vite.dev/)
+- [TanStack Router](https://tanstack.com/router) & [TanStack Query](https://tanstack.com/query)
+- [Tailwind CSS](https://tailwindcss.com/) + [Radix UI](https://www.radix-ui.com/)
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+## Desarrollo local
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+Requisitos: [Node.js](https://nodejs.org/) (o [Bun](https://bun.sh/)).
+
+```bash
+git clone https://github.com/sofiatorruella3/clinic-mastery-quest.git
+cd clinic-mastery-quest
+npm install
 npm run dev
 ```
+
+Para generar la compilación de producción:
+
+```bash
+npm run build
+```
+
+## Despliegue
+
+El sitio se compila y publica automáticamente en **GitHub Pages** mediante GitHub Actions (`.github/workflows/deploy.yml`) en cada push a la rama `main`.
